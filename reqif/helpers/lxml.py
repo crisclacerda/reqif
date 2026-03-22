@@ -33,9 +33,13 @@ def lxml_escape_for_html(string: str) -> str:
 
 
 def lxml_escape_title(string: str) -> str:
-    # The only known reason for this method is the presence of &amp; in the
-    # HEADER title of ReqIF files found at the ci.eclipse.org.
+    # Escape XML special characters in element text content.
+    # Originally only &amp; was handled (ci.eclipse.org ReqIF titles).
+    # Also escape < and > to handle titles containing markup-like text
+    # (e.g. "<reqif-import>" used as placeholder identifiers).
     string = string.replace("&", "&amp;")
+    string = string.replace("<", "&lt;")
+    string = string.replace(">", "&gt;")
     return string
 
 

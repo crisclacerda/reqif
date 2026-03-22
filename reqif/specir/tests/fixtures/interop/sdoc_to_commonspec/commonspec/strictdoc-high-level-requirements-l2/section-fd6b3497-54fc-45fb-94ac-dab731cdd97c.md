@@ -1,0 +1,21 @@
+## SECTION-fd6b3497-54fc-45fb-94ac-dab731cdd97c @SECTION-021
+
+> ReqIF.ChapterName: User experience
+
+### REQUIREMENT: StrictDoc identification @SDOC-SRS-163
+
+> STATUS: Active
+
+StrictDoc shall provide \'about\' and \'version\' commands that display the project\'s title, current version, license, and links to the project\'s web pages.
+
+### SECTION-SSRS-Strict-mode-by-default @SECTION-SSRS-Strict-mode-by-default
+
+> ReqIF.ChapterName: Strict mode by default
+
+#### REQUIREMENT: Warnings are errors @SDOC-SRS-6
+
+> STATUS: Active
+
+> RATIONALE: When warnings are treated as errors, the user becomes aware of potential issues as soon as they appear.
+
+StrictDoc\'s default mode of operation shall treat all warnings as errors.

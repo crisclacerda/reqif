@@ -1,0 +1,2602 @@
+[DOCUMENT]
+TITLE: SpecCompiler Requirements
+
+[GRAMMAR]
+ELEMENTS:
+- TAG: DICTIONARY_ENTRY
+  PROPERTIES:
+    IS_COMPOSITE: True
+  FIELDS:
+  - TITLE: UID
+    TYPE: String
+    REQUIRED: False
+  - TITLE: TITLE
+    TYPE: String
+    REQUIRED: False
+  - TITLE: STATEMENT
+    TYPE: String
+    REQUIRED: False
+  - TITLE: ACRONYM
+    HUMAN_TITLE: acronym
+    TYPE: String
+    REQUIRED: False
+  - TITLE: DESCRIPTION
+    HUMAN_TITLE: description
+    TYPE: String
+    REQUIRED: False
+  - TITLE: DOMAIN
+    HUMAN_TITLE: domain
+    TYPE: String
+    REQUIRED: False
+  - TITLE: STATUS
+    HUMAN_TITLE: status
+    TYPE: SingleChoice(Draft, Review, Approved, Implemented)
+    REQUIRED: False
+  - TITLE: TERM
+    HUMAN_TITLE: term
+    TYPE: String
+    REQUIRED: False
+  - TITLE: TRACEABILITY
+    HUMAN_TITLE: traceability
+    TYPE: String
+    REQUIRED: False
+  RELATIONS:
+  - TYPE: Parent
+    ROLE: Dictionary Reference
+  - TYPE: Parent
+    ROLE: Traces To
+- TAG: HIGH_LEVEL_REQUIREMENT
+  PROPERTIES:
+    IS_COMPOSITE: True
+  FIELDS:
+  - TITLE: UID
+    TYPE: String
+    REQUIRED: False
+  - TITLE: TITLE
+    TYPE: String
+    REQUIRED: False
+  - TITLE: STATEMENT
+    TYPE: String
+    REQUIRED: False
+  - TITLE: DESCRIPTION
+    HUMAN_TITLE: description
+    TYPE: String
+    REQUIRED: False
+  - TITLE: PRIORITY
+    HUMAN_TITLE: priority
+    TYPE: SingleChoice(High, Mid, Low)
+    REQUIRED: False
+  - TITLE: RATIONALE
+    HUMAN_TITLE: rationale
+    TYPE: String
+    REQUIRED: False
+  - TITLE: STATUS
+    HUMAN_TITLE: status
+    TYPE: SingleChoice(Draft, Review, Approved, Implemented)
+    REQUIRED: False
+  RELATIONS:
+  - TYPE: Parent
+    ROLE: Belongs To
+  - TYPE: Parent
+    ROLE: Dictionary Reference
+- TAG: SECTION
+  PROPERTIES:
+    IS_COMPOSITE: True
+  FIELDS:
+  - TITLE: UID
+    TYPE: String
+    REQUIRED: False
+  - TITLE: TITLE
+    TYPE: String
+    REQUIRED: False
+  - TITLE: STATEMENT
+    TYPE: String
+    REQUIRED: False
+  - TITLE: DESCRIPTION
+    HUMAN_TITLE: description
+    TYPE: String
+    REQUIRED: False
+  RELATIONS:
+  - TYPE: Parent
+    ROLE: Dictionary Reference
+  - TYPE: Parent
+    ROLE: Traces To
+- TAG: SOFTWARE_FUNCTION
+  PROPERTIES:
+    IS_COMPOSITE: True
+  FIELDS:
+  - TITLE: UID
+    TYPE: String
+    REQUIRED: False
+  - TITLE: TITLE
+    TYPE: String
+    REQUIRED: False
+  - TITLE: STATEMENT
+    TYPE: String
+    REQUIRED: False
+  - TITLE: DESCRIPTION
+    HUMAN_TITLE: description
+    TYPE: String
+    REQUIRED: False
+  - TITLE: RATIONALE
+    HUMAN_TITLE: rationale
+    TYPE: String
+    REQUIRED: False
+  - TITLE: STATUS
+    HUMAN_TITLE: status
+    TYPE: SingleChoice(Draft, Review, Approved, Implemented)
+    REQUIRED: False
+  RELATIONS:
+  - TYPE: Parent
+    ROLE: Dictionary Reference
+
+[[SECTION]]
+UID: SRS-001-sec1
+TITLE: Scope
+STATEMENT: >>>
+This document defines the high-level requirements for SpecCompiler , a document processing pipeline for structured specifications.
+
+The document is organized in two parts. The first part defines the SpecIR data model, the six core types that the Pipeline operates on. The second part specifies the functional requirements, grouped into System Features (SF-001 through SF-006), each decomposed into High-Level Requirements.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-15
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-001
+  ROLE: Traces To
+- TYPE: Parent
+  VALUE: SF-006
+  ROLE: Traces To
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SRS-001-sec2
+TITLE: SpecIR Types
+STATEMENT: >>>
+SpecIR (see SpecIR) is the data model that SpecCompiler builds from source Markdown during the INITIALIZE Phase phase. The core task of parsing is to lower Markdown annotations into a set of typed content tables that the Pipeline can analyze, transform, verify, and emit. The entries below define each of these six content tables as a formal tuple specifying the Markdown syntax that produces it.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-SPECIR
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-19
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-15
+  ROLE: Dictionary Reference
+
+[[DICTIONARY_ENTRY]]
+UID: SpecIR-01
+TITLE: Specification
+STATEMENT: >>>
+A Specification is the root document container created from an H1 header. It represents a complete document like an SRS, SDD, or SVC. Each specification has a type, optional PID, and contains attributes and all spec objects within that document.
+<<<
+DESCRIPTION: >>>
+Formal definition: $: S = (tau, n, "pid", cc A, cc O) — a tuple of type, title, project identifier, attributes, and child objects.
+
+Syntax: # [TypeRef:] Text [@PID]
+
+Full specification: See the CommonSpec Language Specification for the complete grammar, type inference rules, and examples.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: SpecIR-02
+TITLE: Spec Object
+STATEMENT: >>>
+A Spec Object represents a traceable element in a specification document, created from H2-H6 headers. Objects can be requirements (HLR, LLR), verification cases (VC), design elements (FD, CSC, CSU), or structural sections (SECTION). Each object has a type, PID and can contain attributes, body content, floats, relations, views, and child objects.
+<<<
+DESCRIPTION: >>>
+Formal definition: $: O = (tau, "title", "pid", beta, cc A, cc F, cc R, cc V, cc O) — a tuple of type, title, project identifier, body content, attributes, floats, relations, views, and child objects.
+
+Syntax: ##...###### [TypeRef:] Title [@PID]
+
+Full specification: See the CommonSpec Language Specification for the complete grammar, type inference, PID auto-generation, and examples.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: SpecIR-03
+TITLE: Spec Float
+STATEMENT: >>>
+A Spec Float represents a floating element like a figure, table, or diagram. Floats are created from fenced code blocks with a TypeRef:Label pattern. They are automatically numbered within their counter group and can be cross-referenced by their label. Some floats require external rendering (e.g., PlantUML diagrams).
+<<<
+DESCRIPTION: >>>
+Formal definition: $: F = (tau, "label", cc "kv", "content") — a tuple of type, label, key-value metadata, and raw content.
+
+Syntax: ```TypeRef:Label[{Key=Value, ...}] Content ```
+
+Full specification: See the CommonSpec Language Specification for float types, aliases, counter groups, and examples.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: SpecIR-04
+TITLE: Attribute
+STATEMENT: >>>
+An Attribute stores metadata for specifications and spec objects using an Entity-Attribute-Value (EAV) pattern. Attributes are defined in blockquotes following headers and support multiple datatypes including strings, integers, dates, enums, and rich XHTML content (Pandoc AST). Relations are extracted from the AST. Attribute definitions constrain which attributes each object type can have.
+<<<
+DESCRIPTION: >>>
+Formal definition: $: A = (tau, beta, cc R) — a triple of attribute type, blockquote content, and child relations.
+
+Syntax: > TypeRef: value
+
+Datatypes: STRING, INTEGER, REAL, BOOLEAN, DATE, ENUM, XHTML.
+
+Full specification: See the CommonSpec Language Specification for the complete datatype semantics, attribute constraints, and examples.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: SpecIR-05
+TITLE: Spec Relation
+STATEMENT: >>>
+A Spec Relation represents a traceability link between specification elements. Relations are created from Markdown links where the link target (URL) acts as a selector that drives type inference. The relation type is not authored explicitly — it is inferred by constraint matching: each relation type defines optional constraints on selector, source attribute, source type, and target type. The most specific match (most non-NULL constraints) wins.
+<<<
+DESCRIPTION: >>>
+Formal definition: $: R = (s, t, sigma, alpha) — a 4-tuple of source object, target element, link selector, and source attribute.
+
+Type inference: $: rho = "infer"(sigma, alpha, tau_s, tau_t) — the relation type is inferred by constraint matching with most-specific-wins across selector, attribute, source type, and target type.
+
+Syntax: [Target](selector) where the URL starts with @ or #. Selectors are not hardcoded — they are defined by relation types in the model (e.g., PID_REF defines @, LABEL_REF defines #, XREF_CITATION defines @cite,@citep). Models can register any @... or #... selector.
+
+Full specification: See the CommonSpec Language Specification for the complete inference algorithm and examples.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: SpecIR-06
+TITLE: Spec View
+STATEMENT: >>>
+A Spec View represents a dynamic query or generated content block. Views are materialized during the TRANSFORM phase and can generate tables of contents (TOC), lists of figures (LOF), or custom queries, abbreviations, and inline math. Views enable dynamic document assembly based on specification data.
+<<<
+DESCRIPTION: >>>
+Formal definition: $: V = (tau, omega) — a pair of view type and parameter string.
+
+Syntax: `TypeRef:[ViewParam]`
+
+Full specification: See the CommonSpec Language Specification for view types, materialization strategies, and examples.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SRS-001-sec3
+TITLE: Functional Requirements
+STATEMENT: >>>
+With the data model established, the following sections define the functional requirements for SpecCompiler Core. Requirements are organized into System Features (SF), each covering a distinct functional domain. Every SF is decomposed into High-Level Requirements that state what the system shall do.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-HLR
+  ROLE: Dictionary Reference
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SRS-001-sec4
+TITLE: Pipeline Requirements
+STATEMENT: >>>
+<<<
+
+[[SOFTWARE_FUNCTION]]
+UID: SF-001
+TITLE: Pipeline Execution
+STATEMENT: >>>
+Five-phase document processing lifecycle with Handler orchestration and Topological Sort ordering.
+<<<
+DESCRIPTION: >>>
+Groups requirements for the core TERM-15 that drives document processing through TERM-19, TERM-20, TERM-22, TERM-21, TERM-23 phases with declarative handler dependencies.
+<<<
+RATIONALE: >>>
+A structured processing pipeline enables separation of concerns, validation gates, and deterministic handler ordering.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-15
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-19
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-20
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-22
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-21
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-23
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-16
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-25
+  ROLE: Dictionary Reference
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-PIPE-001
+TITLE: Five-Phase Lifecycle
+STATEMENT: >>>
+The pipeline shall execute handlers in a five-phase lifecycle: INITIALIZE, ANALYZE, TRANSFORM, VERIFY, EMIT.
+<<<
+DESCRIPTION: >>>
+Each phase serves a distinct purpose in document processing:
+
+INITIALIZE: Parse document AST and populate database with specifications, spec_objects, floats, relations, views, and attributes
+ANALYZE: Resolve relations between objects (link target resolution, type inference)
+TRANSFORM: Pre-compute views, render external content (PlantUML, charts), prepare for output
+VERIFY: Run proof views to validate data integrity, type constraints, cardinality rules
+EMIT: Assemble final documents and write to output formats (docx, html5, markdown, json)
+<<<
+RATIONALE: >>>
+Separation of concerns enables validation between phases, allows early abort on errors, and supports format-agnostic processing until the final output stage.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-001
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-PIPE-002
+TITLE: Handler Registration and Prerequisites
+STATEMENT: >>>
+The pipeline shall support handler registration with declarative Prerequisites for dependency ordering.
+<<<
+DESCRIPTION: >>>
+Handlers register via register_handler(handler) with required fields:
+
+name: Unique string identifier for the handler
+prerequisites: Array of handler names that must execute before this handler
+
+Handlers declare participation in phases via hook methods (on_initialize, on_analyze, on_verify, on_transform, on_emit). Duplicate handler names cause registration error.
+<<<
+RATIONALE: >>>
+Declarative prerequisites decouple handler ordering from registration order, enabling modular handler development and preventing implicit ordering dependencies.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-24
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-001
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-PIPE-003
+TITLE: Topological Ordering via Kahnâs Algorithm
+STATEMENT: >>>
+The pipeline shall order handlers within each phase using topological sort with Kahn’s algorithm.
+<<<
+DESCRIPTION: >>>
+For each phase, the pipeline:
+
+Identifies handlers participating in the phase (those with on_{phase} hooks)
+Builds dependency graph from prerequisites (only for participating handlers)
+Executes Kahn’s algorithm to produce execution order
+Sorts alphabetically at each level for deterministic output
+Detects and reports circular dependencies with error listing remaining nodes
+<<<
+RATIONALE: >>>
+Kahn’s algorithm provides O(V+E) complexity, clear cycle detection, and deterministic ordering through alphabetic tie-breaking.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-001
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-PIPE-004
+TITLE: Phase Abort on VERIFY Errors
+STATEMENT: >>>
+The pipeline shall abort execution after VERIFY phase if any errors are recorded.
+<<<
+DESCRIPTION: >>>
+After running VERIFY phase, the pipeline checks diagnostics:has_errors(). If true, execution halts before EMIT phase, with TRANSFORM already completed. Error message is logged with error count. This prevents generating invalid output from documents with specification violations.
+<<<
+RATIONALE: >>>
+Early abort on verification failures saves computation and prevents distribution of invalid specification documents. Errors in VERIFY indicate data integrity issues that would produce incorrect outputs.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-001
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-PIPE-005
+TITLE: Batch Dispatch for All Phases
+STATEMENT: >>>
+The pipeline shall use a single batch dispatch model for all phases where handlers receive all contexts at once.
+<<<
+DESCRIPTION: >>>
+All handlers implement on_{phase}(data, contexts, diagnostics) hooks that receive the full contexts array. The pipeline orchestrator calls each handler’s hook once per phase via run_phase(), passing all document contexts. Handlers are responsible for iterating over contexts internally.
+
+This enables cross-document optimizations, transaction batching, and parallel processing within any phase.
+<<<
+RATIONALE: >>>
+A uniform dispatch model simplifies the pipeline engine, eliminates the dual-path batch/per-doc dispatch, and allows handlers in any phase to optimize across all documents (e.g., wrapping DB operations in a single transaction, parallel output generation in EMIT).
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-001
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-PIPE-006
+TITLE: Context Creation and Propagation
+STATEMENT: >>>
+The pipeline shall create and propagate context objects containing document metadata and configuration through all phases.
+<<<
+DESCRIPTION: >>>
+The execute(docs) method creates context objects for each input document with:
+
+doc: Pandoc document AST (via DocumentWalker)
+spec_id: Specification identifier derived from filename
+config: Preset configuration (styles, captions, validation)
+build_dir: Output directory path
+output_format: Target format (docx, html5, etc.)
+template: Template name for model loading
+reference_doc: Path to reference.docx for styling
+docx, html5: Format-specific configuration
+outputs: Array of {format, path} for multi-format output
+bibliography, csl: Citation configuration
+project_root: Root directory for resolving relative paths
+
+Context flows through all phases, enriched by handlers (e.g., verification results in VERIFY phase).
+<<<
+RATIONALE: >>>
+Unified context object provides handlers with consistent access to document metadata and build configuration without global state, enabling testable and isolated handler implementations.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-001
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-PIPE-007
+TITLE: CommonSpec Input Parsing
+STATEMENT: >>>
+The system shall parse CommonSpec documents during the INITIALIZE Phase phase, lowering Markdown annotations into Intermediate Representation content tables.
+<<<
+DESCRIPTION: >>>
+The INITIALIZE phase TERM-16s parse the Pandoc TERM-AST and populate the six IR content tables according to these rules:
+
+H1 headers register as SpecIR-01 records with optional TYPE: prefix and @PID suffix
+H2-H6 headers register as SpecIR-02 records with type inference (explicit TYPE: prefix, implicit alias lookup, or default type fallback)
+Blockquote lines (> key: value) register as SpecIR-04 records attached to the enclosing spec object
+Fenced code blocks with TypeRef:Label class register as SpecIR-03 records
+Markdown links with (@) or (#) targets register as SpecIR-05 records
+Inline code with TypeRef: content syntax registers as SpecIR-06 records
+
+Each handler populates its content table with content-addressable identifiers (SHA1) and preserves document ordering via file_seq.
+<<<
+RATIONALE: >>>
+Formal parsing rules ensure deterministic lowering from CommonSpec to SpecIR, enabling round-trip fidelity and predictable behavior across document structures.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-16
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-AST
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SpecIR-01
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SpecIR-02
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SpecIR-04
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SpecIR-03
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SpecIR-05
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SpecIR-06
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-COMMONSPEC
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-19
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-IR
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-001
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-PIPE-008
+TITLE: Include File Expansion
+STATEMENT: >>>
+When a document contains .include code blocks, the system shall expand them by embedding the referenced file content before Pipeline processing.
+<<<
+DESCRIPTION: >>>
+Include expansion runs before the five-phase pipeline on each source document:
+
+Fenced code blocks with class .include are identified
+Each line in the block is treated as a relative file path
+Paths are resolved relative to the including file’s directory
+Referenced files are read, parsed, and recursively expanded
+The include block is replaced with the parsed content blocks
+
+Cycle detection prevents infinite recursion. Maximum include depth is bounded. Source position tracking attributes are injected for diagnostic reporting.
+<<<
+RATIONALE: >>>
+Include expansion enables modular document authoring where specifications are composed from reusable fragments. Pre-pipeline expansion ensures all downstream handlers see a complete, flattened document.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-15
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-001
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-PIPE-009
+TITLE: PID Auto-Generation
+STATEMENT: >>>
+When a spec object does not have an explicit @PID, the system shall auto-generate a Project Identifier during the ANALYZE Phase phase based on the object’s type definition.
+<<<
+DESCRIPTION: >>>
+The PID generator runs in the ANALYZE phase before relation resolution:
+
+Non-TERM-COMPOSITE objects: PIDs are generated using the type’s pid_prefix and pid_format (e.g., HLR-%03d produces “HLR-001”), starting from the next available sequence number
+TERM-COMPOSITE objects: Hierarchical PIDs are qualified by the specification PID (e.g., “SRS-sec1.2.3”)
+
+Auto-generated PIDs never overwrite explicit @PID annotations. Collision detection ensures global uniqueness across all specifications.
+<<<
+RATIONALE: >>>
+Auto-generation reduces authoring burden while maintaining stable identifiers for traceability.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-COMPOSITE
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-COMPOSITE
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-PID
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-20
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-001
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-PIPE-010
+TITLE: Relation Type Inference
+STATEMENT: >>>
+The system shall infer relation types during the ANALYZE Phase phase using constraint-based matching with Specificity Scoring scoring.
+<<<
+DESCRIPTION: >>>
+For each unresolved relation, the relation analyzer:
+
+Filter: Identifies candidate relation types whose constraints are compatible with the relation’s TERM-SELECTOR, source attribute, source type, and target type
+Resolve: Calls the resolver (determined by the type’s extends chain root) to find the target object
+Score: Counts matching non-NULL constraints across all four dimensions; NULL constraints act as wildcards (match anything but do not increase specificity)
+Pick: The highest specificity match wins; ties mark the relation as ambiguous
+
+Same-specification targets are preferred over cross-specification targets. The relation’s target_ref and type_ref are updated in the database.
+<<<
+RATIONALE: >>>
+Type inference from constraints eliminates explicit relation type annotation in source documents, reducing authoring burden. Specificity scoring ensures the most specific matching type is selected, enabling both generic and specialized relation types to coexist.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-SELECTOR
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-20
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-SPECIFICITY
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-001
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[/SOFTWARE_FUNCTION]]
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SRS-001-sec5
+TITLE: Storage Requirements
+STATEMENT: >>>
+<<<
+
+[[SOFTWARE_FUNCTION]]
+UID: SF-002
+TITLE: Specification Persistence
+STATEMENT: >>>
+SQLite Database-based storage with incremental build support and output caching.
+<<<
+DESCRIPTION: >>>
+Groups requirements for the persistence layer including ACID-compliant storage, TERM-EAV attribute model, TERM-30, TERM-31, and incremental rebuild support.
+<<<
+RATIONALE: >>>
+Reliable persistence with change detection enables efficient rebuilds for large specification projects.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-EAV
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-30
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-31
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-SQLITE
+  ROLE: Dictionary Reference
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-STOR-001
+TITLE: SQLite Persistence
+STATEMENT: >>>
+The system shall persist all specification data to SQLite database with ACID guarantees.
+<<<
+DESCRIPTION: >>>
+All specifications, spec_objects, floats, relations, views, and attribute values stored in SQLite database. Database operations wrapped in transactions to ensure atomicity, consistency, isolation, and durability.
+<<<
+RATIONALE: >>>
+SQLite provides a reliable, single-file persistence layer suitable for specification documents. ACID guarantees prevent data corruption during concurrent access or system failures.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-002
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-STOR-002
+TITLE: EAV Attribute Model
+STATEMENT: >>>
+The system shall store spec object attributes using Entity-Attribute-Value pattern.
+<<<
+DESCRIPTION: >>>
+Attribute values stored in attribute_values table with polymorphic typed columns (string_value, int_value, real_value, bool_value, date_value, enum_ref). Each attribute record links to owner object via owner_ref and stores datatype for proper retrieval.
+<<<
+RATIONALE: >>>
+EAV pattern enables flexible attribute schemas without database migrations. Different spec object types (HLR, LLR, VC) have different attributes that can evolve independently.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-002
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-STOR-003
+TITLE: Build Cache
+STATEMENT: >>>
+The system shall maintain a build cache for document hash tracking.
+<<<
+DESCRIPTION: >>>
+Source file hashes stored in source_files table (path, sha1). Build cache module provides is_document_dirty() to check if document content has changed since last build. Hash comparison enables change detection.
+<<<
+RATIONALE: >>>
+Hash-based change detection allows the build system to skip unchanged documents, reducing rebuild times for large specification sets.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-002
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-STOR-004
+TITLE: Output Cache
+STATEMENT: >>>
+The system shall cache output generation state with P-IR hash and timestamps.
+<<<
+DESCRIPTION: >>>
+Output cache stored in output_cache table (spec_id, output_path, pir_hash, generated_at). P-IR (Processed Intermediate Representation) hash captures complete specification state. is_output_current() checks if output file exists and P-IR hash matches cached value.
+<<<
+RATIONALE: >>>
+Output caching avoids regenerating unchanged outputs (docx, html5). P-IR hash ensures output is regenerated when any upstream data changes, not just source file changes.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-002
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-STOR-006
+TITLE: EAV Pivot Views for External Queries
+STATEMENT: >>>
+The system shall generate per-object-type SQL views that pivot the EAV attribute model into typed columns for external BI queries.
+<<<
+DESCRIPTION: >>>
+For each non-composite spec_object_type, a view named view_{type_lower}_objects is dynamically generated (e.g., view_hlr_objects, view_vc_objects). Each view flattens the EAV join into one row per object with typed attribute columns, enabling queries like SELECT * FROM view_hlr_objects WHERE status = 'approved'. These views are NOT used by internal pipeline queries — all internal code queries the raw EAV tables directly because it needs access to raw_value, datatype, ast, enum_ref, and other columns that the pivot views abstract away. Internal queries also frequently operate cross-type or need COUNT/EXISTS checks that the MAX()-based pivot cannot provide.
+<<<
+RATIONALE: >>>
+External BI tools, ad-hoc SQL queries, and custom model scripts benefit from a flat relational interface over the EAV model. Generating views at runtime from the type system ensures the columns always match the current model configuration without manual maintenance.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-002
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-STOR-005
+TITLE: Incremental Rebuild Support
+STATEMENT: >>>
+The system shall support incremental rebuilds via build graph tracking.
+<<<
+DESCRIPTION: >>>
+Build graph stored in build_graph table (root_path, node_path, node_sha1). Tracks include file dependencies for each root document. is_document_dirty_with_includes() checks root document and all includes. update_build_graph() refreshes dependency tree after successful build.
+<<<
+RATIONALE: >>>
+Specification documents often include sub-files. Incremental builds must detect changes in any included file to trigger rebuild of parent document. Build graph captures this dependency structure.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-002
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[/SOFTWARE_FUNCTION]]
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SRS-001-sec6
+TITLE: Types Domain Requirements
+STATEMENT: >>>
+<<<
+
+[[SOFTWARE_FUNCTION]]
+UID: SF-003
+TITLE: Type System
+STATEMENT: >>>
+Dynamic type system providing typed containers for Specification, Spec Object, Spec Float, Spec View, Spec Relation, and Attribute.
+<<<
+DESCRIPTION: >>>
+Groups requirements for the six core containers that store parsed specification data plus the proof-view validation framework.
+<<<
+RATIONALE: >>>
+A typed container model enables schema validation, type-specific rendering, and data integrity checking through SQL proof views.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SpecIR-01
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SpecIR-02
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SpecIR-03
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SpecIR-06
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SpecIR-05
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SpecIR-04
+  ROLE: Dictionary Reference
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-TYPE-001
+TITLE: Specifications Container
+STATEMENT: >>>
+The type system shall provide a specifications container for registering document-level specification records.
+<<<
+DESCRIPTION: >>>
+The specifications table stores metadata for each specification document parsed during TERM-19 phase:
+
+identifier: Unique specification ID derived from filename (e.g., “srs-main”)
+root_path: Source file path for the specification
+long_name: Human-readable title extracted from L1 header
+type_ref: Specification type (validated against spec_specification_types)
+pid: Optional PID from @PID syntax in L1 header
+
+L1 headers register as specifications. Type validation checks spec_specification_types table. Invalid types fall back to default or emit warning.
+<<<
+RATIONALE: >>>
+Specifications represent the top-level organizational unit for document hierarchies. Storing specification metadata enables cross-document linking and multi-document project support.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-19
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-003
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-TYPE-002
+TITLE: Spec Objects Container
+STATEMENT: >>>
+The type system shall provide a spec_objects container for hierarchical specification objects.
+<<<
+DESCRIPTION: >>>
+The spec_objects table stores structured specification items extracted from L2+ headers:
+
+identifier: SHA1 hash of source path + line + title (content-addressable)
+specification_ref: Foreign key to parent specification
+type_ref: Object type (validated against spec_object_types)
+from_file: Source file path
+file_seq: Document order sequence number
+pid: Project ID from @PID syntax (e.g., “REQ-001”)
+title_text: Header text without type prefix or PID
+label: Unified label for cross-referencing (format: {type_lower}:{title_slug})
+level: Header level (2-6)
+start_line, end_line: Source line range
+ast: Serialized Pandoc AST (JSON) for section content
+
+Type resolution order: explicit TYPE: prefix, implicit alias lookup, default type fallback.
+<<<
+RATIONALE: >>>
+Content-addressable identifiers enable change detection for incremental builds. PID-based anchors provide stable cross-references independent of title changes.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-003
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-TYPE-003
+TITLE: Spec Floats Container
+STATEMENT: >>>
+The type system shall provide a spec_floats container for numbered floating content (figures, tables, listings).
+<<<
+DESCRIPTION: >>>
+The spec_floats table stores content blocks that receive sequential numbering:
+
+identifier: Short format “float-{8-char-sha1}” for DOCX compatibility
+specification_ref: Foreign key to parent specification
+type_ref: Float type resolved from aliases (e.g., “csv” -> “TABLE”, “puml” -> “FIGURE”)
+from_file: Source file path
+file_seq: Document order for numbering
+label: User-provided label for cross-referencing
+number: Sequential number within counter_group (assigned in TERM-22)
+caption: Caption text from attributes
+raw_content: Original code block text
+raw_ast: Serialized Pandoc CodeBlock (JSON)
+parent_object_ref: Foreign key to containing spec_object
+attributes: JSON-serialized attributes (caption, source, language)
+syntax_key: Original class syntax for backend matching
+
+TERM-28 share numbering (e.g., FIGURE, CHART, PLANTUML all increment “FIGURE” counter).
+<<<
+RATIONALE: >>>
+Type aliasing supports user-friendly syntax (e.g., csv:data instead of TABLE:data). Counter groups enable semantic grouping of related float types under a single numbering sequence.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-22
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-28
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-003
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-TYPE-004
+TITLE: Spec Views Container
+STATEMENT: >>>
+The type system shall provide a spec_views container for data-driven view definitions.
+<<<
+DESCRIPTION: >>>
+The spec_views table stores view definitions from code blocks and inline syntax:
+
+identifier: SHA1 hash of specification + sequence + content
+specification_ref: Foreign key to parent specification
+view_type_ref: Uppercase view type (e.g., “SELECT”, “SYMBOL”, “MATH”, “ABBREV”)
+from_file: Source file path
+file_seq: Document order sequence number
+raw_ast: View definition content (SQL query, symbol path, expression)
+
+View types with needs_external_render = 1 in spec_view_types are delegated to specialized renderers. Inline views use TypeRef: content syntax (e.g., symbol: Class.method).
+<<<
+RATIONALE: >>>
+Separating view definitions from rendering enables format-agnostic processing. External render delegation supports complex transformations (PlantUML, charts) without core handler changes.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-003
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-TYPE-005
+TITLE: Spec Relations Container
+STATEMENT: >>>
+The type system shall provide a spec_relations container for tracking links between specification elements.
+<<<
+DESCRIPTION: >>>
+The spec_relations table stores inter-element references:
+
+identifier: SHA1 hash of specification + target + type + parent
+specification_ref: Foreign key to parent specification
+source_ref: Foreign key to source spec_object
+target_text: Raw link target from syntax (e.g., “REQ-001”, “fig:diagram”)
+target_ref: Resolved target identifier (populated in TERM-20 phase)
+type_ref: Relation type from spec_relation_types (e.g., “TRACES”, “XREF_FIGURE”)
+from_file: Source file path
+
+Link syntax: [PID](@) for PID references, [type:label](#) for float references, [@citation] for bibliographic citations. Default relation types are determined by is_default and link_selector columns in spec_relation_types.
+<<<
+RATIONALE: >>>
+Deferred resolution (target_text -> target_ref) enables forward references and cross-document linking. Type inference from source/target context reduces explicit markup requirements.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-20
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-003
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-TYPE-006
+TITLE: Spec Attributes Container
+STATEMENT: >>>
+The type system shall provide a spec_attributes container for structured metadata on specification objects.
+<<<
+DESCRIPTION: >>>
+The spec_attributes table stores typed attribute values extracted from blockquote syntax:
+
+identifier: SHA1 hash of specification + owner + name + value
+specification_ref: Foreign key to parent specification
+owner_ref: Foreign key to owning spec_object
+name: Attribute name (field name without colon)
+raw_value: Original string value
+string_value, int_value, real_value, bool_value, date_value: Type-specific columns
+enum_ref: Foreign key to enum_values for ENUM types
+ast: JSON-serialized Pandoc AST for rich content (XHTML type)
+datatype: Resolved datatype from spec_attribute_types
+
+Attribute syntax: > name: value in blockquotes following headers. Datatypes include STRING, INTEGER, REAL, BOOLEAN, DATE, ENUM, XHTML. Multi-line attributes use continuation blocks.
+<<<
+RATIONALE: >>>
+Multi-column typed storage enables SQL queries with type-appropriate comparisons. Storing original AST preserves formatting for XHTML attributes with links, emphasis, or lists.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-003
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-TYPE-007
+TITLE: Type Validation
+STATEMENT: >>>
+The type system shall provide proof views that detect data integrity violations across all specification containers.
+
+The type system described above is not fixed at compile time. The following section defines how dic:model directories extend it with custom object types, float renderers, dic:data-view generators, and style presets.
+<<<
+DESCRIPTION: >>>
+Proof views are SQL queries registered in the TERM-21 phase that check for constraint violations:
+
+Specification-level (missing required attributes, invalid types)
+Object-level (missing required, cardinality, cast failures, invalid enum/date, bounds)
+Float-level (orphans, duplicate labels, render failures, invalid types)
+Relation-level (unresolved, dangling, ambiguous)
+View-level (materialization failures, query errors)
+
+The validation policy (configurable in project.yaml) determines severity: error, warn, or ignore.
+<<<
+RATIONALE: >>>
+Automated validation enables early detection of specification errors before document generation. Configurable severity allows projects to gradually enforce stricter quality standards.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-21
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-003
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[/SOFTWARE_FUNCTION]]
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SRS-001-sec7
+TITLE: Extension Requirements
+STATEMENT: >>>
+<<<
+
+[[SOFTWARE_FUNCTION]]
+UID: SF-005
+TITLE: Extension Framework
+STATEMENT: >>>
+Model-based extensibility for type Handler, renderers, and Data View.
+<<<
+DESCRIPTION: >>>
+Groups requirements for the extension mechanism that enables custom models to provide type handlers, TERM-34, data view generators, and style presets.
+<<<
+RATIONALE: >>>
+Extensibility through model directories enables domain-specific customization without modifying the core pipeline.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-34
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-16
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-35
+  ROLE: Dictionary Reference
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-EXT-001
+TITLE: Model-Specific Type Handler Loading
+STATEMENT: >>>
+The system shall load type-specific handlers from model directories.
+<<<
+DESCRIPTION: >>>
+Type handlers control how specification content is rendered during the TERM-22 phase. The loading mechanism supports:
+
+Object types: Loaded from models/{model}/types/objects/{type}.lua
+Specification types: Loaded from models/{model}/types/specifications/{type}.lua
+Float types: Loaded from models/{model}/types/floats/{type}.lua
+View types: Loaded from models/{model}/types/views/{type}.lua
+
+Module loading uses require() with path models.{model}.types.{category}.{type}. Type names are converted to lowercase for file lookup (e.g., “HLR” -> “hlr.lua”).
+<<<
+RATIONALE: >>>
+Separating type handlers into model directories enables domain-specific customization. Organizations can define their own requirement types, document types, and rendering behavior without modifying core code.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-22
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-005
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-EXT-002
+TITLE: Model Directory Structure
+STATEMENT: >>>
+The system shall organize model content in a standardized directory hierarchy.
+<<<
+DESCRIPTION: >>>
+Each model follows this structure:
+
+models/{model_name}/
+  types/
+    objects/       -- Spec object type handlers (HLR, LLR, VC, etc.)
+    specifications/-- Specification type handlers (SRS, SDD, SVC)
+    floats/        -- Float type handlers (TABLE, PLANTUML, CHART)
+    views/         -- View type handlers (ABBREV, SYMBOL, MATH)
+    relations/     -- Relation type definitions (TRACES_TO, etc.)
+  data_views/      -- Data view generators for chart data injection
+  filters/         -- Pandoc filters (docx.lua, html.lua, markdown.lua)
+  postprocessors/  -- Format-specific postprocessors
+  styles/          -- Style presets and templates
+Model names are referenced via project configuration template field or context model_name. The “default” model provides base implementations with fallback behavior.
+<<<
+RATIONALE: >>>
+Standardized structure enables consistent discovery of type modules across models and provides clear extension points for each content category.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-005
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-EXT-003
+TITLE: Handler Registration Interface
+STATEMENT: >>>
+Type handlers shall provide standardized registration interfaces for pipeline integration.
+<<<
+DESCRIPTION: >>>
+Each handler category defines specific interfaces:
+
+Object Type Handlers export:
+
+M.object: Type schema with id, long_name, description, attributes
+M.handler.on_render_SpecObject(obj, ctx): Render function returning Pandoc blocks
+
+Specification Type Handlers export:
+
+M.specification: Type schema with id, long_name, attributes
+M.handler.on_render_Specification(ctx, pandoc, data): Render document title
+
+Float Type Handlers export:
+
+M.float: Type schema with id, caption_format, counter_group, aliases, needs_external_render
+M.transform(raw_content, type_ref, log): For internal transforms (TABLE, CSV)
+external_render.register_renderer(type_ref, callbacks): For external renders (PLANTUML, CHART)
+
+View Type Handlers export:
+
+M.view: Type schema with id, inline_prefix, aliases
+M.handler.on_render_Code(code, ctx): Inline code rendering
+<<<
+RATIONALE: >>>
+Consistent interfaces enable the core pipeline to discover and invoke handlers without knowledge of specific type implementations. This separation maintains extensibility.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-005
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-EXT-004
+TITLE: Type Definition Schema
+STATEMENT: >>>
+Type definitions shall declare metadata schema that controls registration and behavior.
+<<<
+DESCRIPTION: >>>
+Type schemas provide metadata stored in registry tables:
+
+Object Types (spec_object_types):
+
+M.object = {
+    id = "HLR",    -- Unique identifier (uppercase)
+    long_name = "High-Level Requirement",
+    description = "A top-level system requirement",
+    extends = "TRACEABLE",         -- Base type for inheritance
+    header_unnumbered = true,      -- Exclude from section numbering
+    header_style_id = "Heading2",  -- Custom-style for headers
+    body_style_id = "Normal",      -- Custom-style for body
+    attributes = { -- Attribute definitions
+        { name = "status", type = "ENUM", values = {...}, min_occurs = 1 },
+        { name = "rationale", type = "XHTML" },
+        { name = "created", type = "DATE" },
+    }
+}
+
+Float Types (spec_float_types):
+
+M.float = {
+    id = "CHART",
+    caption_format = "Figure",     -- Caption prefix
+    counter_group = "FIGURE",      -- Counter sharing (FIGURE, CHART, PLANTUML)
+    aliases = { "echarts" },       -- Alternative syntax identifiers
+    needs_external_render = true,  -- Requires external tool
+}
+
+View Types (spec_view_types):
+
+M.view = {
+    id = "ABBREV",
+    inline_prefix = "abbrev",      -- Syntax: `abbrev: content`
+    aliases = { "sigla", "acronym" },
+    needs_external_render = false,
+}
+<<<
+RATIONALE: >>>
+Declarative schemas enable automatic registration into database tables during initialization, provide validation rules for content, and configure rendering behavior without procedural code.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-005
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-EXT-005
+TITLE: Model Path Resolution
+STATEMENT: >>>
+The system shall resolve model paths using environment configuration with fallback.
+<<<
+DESCRIPTION: >>>
+Model path resolution follows this order:
+
+Check SPECCOMPILER_HOME environment variable: $SPECCOMPILER_HOME/models/{model}
+Fall back to current working directory: ./models/{model}
+
+For type modules not found in the specified model, the system falls back to the “default” model:
+
+-- Try model-specific path first
+local module = require("models." .. model_name .. ".types.floats.table")
+-- Fallback to default model
+local module = require("models.default.types.floats.table")
+
+This enables partial model customization where models only override specific types.
+<<<
+RATIONALE: >>>
+Environment-based configuration supports deployment flexibility. Fallback to default model reduces duplication by allowing models to inherit base implementations.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-005
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-EXT-006
+TITLE: External Renderer Registration
+STATEMENT: >>>
+External renderers shall register callbacks for task preparation and result handling.
+<<<
+DESCRIPTION: >>>
+Float types requiring external tools (PlantUML, ECharts, etc.) register with the external render handler:
+
+external_render.register_renderer("PLANTUML", {
+    prepare_task = function(float, build_dir, log, data, model_name)
+        -- Return task descriptor with cmd, args, output_path, context
+    end,
+    handle_result = function(task, success, stdout, stderr, data, log)
+        -- Update resolved_ast in database
+    end
+})
+
+The core orchestrates: query items -> prepare tasks -> cache filter -> batch spawn -> dispatch results. This enables parallel execution across all external renders.
+<<<
+RATIONALE: >>>
+Registration pattern decouples type-specific rendering logic from core orchestration. Callbacks enable types to control task preparation and result interpretation while core handles parallelization and caching.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-005
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-EXT-007
+TITLE: Data View Generator Loading
+STATEMENT: >>>
+The system shall load data view generators from model directories for chart data injection.
+<<<
+DESCRIPTION: >>>
+Data views are Lua modules that generate data for charts:
+
+-- models/{model}/data_views/{view_name}.lua
+local M = {}
+
+function M.generate(params, data)
+    -- params: user parameters from code block attributes
+    -- data: DataManager instance for SQL queries
+    return { source = { {"x", "y"}, {1, 10}, {2, 20} } }
+end
+
+return M
+
+Views are loaded via data_loader.load_view(view_name, model_name, data, params). Resolution tries the specified model first, then falls back to default.
+
+Usage in code blocks:
+
+```chart:gaussian{view="gaussian" sigma=2.0}
+{...echarts config...}
+<<<
+RATIONALE: >>>
+Data views separate data generation from chart configuration. This enables reusable data sources and database-driven visualizations without embedding SQL in markdown.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-005
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-EXT-008
+TITLE: Handler Caching
+STATEMENT: >>>
+The system shall cache loaded type handlers to avoid repeated module loading.
+<<<
+DESCRIPTION: >>>
+Each handler loader maintains a cache keyed by {model}:{type_ref}:
+
+local type_handlers = {}
+
+local function load_type_handler(type_ref, model_name)
+    local cache_key = model_name .. ":" .. type_ref
+    if type_handlers[cache_key] ~= nil then
+        return type_handlers[cache_key]
+    end
+
+-- Load module via require()
+    local ok, module = pcall(require, module_path)
+    if ok and module then
+        type_handlers[cache_key] = module.handler
+        return module.handler
+    end
+
+type_handlers[cache_key] = false  -- Cache negative result
+    return nil
+end
+
+Cache stores false for failed lookups to avoid repeated require() calls for non-existent modules.
+<<<
+RATIONALE: >>>
+Caching improves performance for documents with many objects of the same type. Negative caching prevents repeated filesystem access for types without custom handlers.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-005
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[/SOFTWARE_FUNCTION]]
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SRS-001-sec8
+TITLE: Output Requirements
+STATEMENT: >>>
+<<<
+
+[[SOFTWARE_FUNCTION]]
+UID: SF-004
+TITLE: Multi-Format Publication
+STATEMENT: >>>
+Assembles transformed content and publishes DOCX/HTML5 outputs with cache-aware emission.
+<<<
+DESCRIPTION: >>>
+Single-source, multi-target publication. Groups requirements for document assembly, float resolution/numbering, and format-specific output generation.
+<<<
+RATIONALE: >>>
+Technical documentation must be publishable in multiple formats from a single Markdown source.
+<<<
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-OUT-001
+TITLE: Document Assembly
+STATEMENT: >>>
+The system shall reconstruct a complete Pandoc document from Intermediate Representation database content for each specification, preserving document order and embedding all resolved content.
+<<<
+DESCRIPTION: >>>
+During the TERM-23 phase, the assembler queries spec_objects ordered by file_seq, decodes stored JSON TERM-AST fragments back to Pandoc blocks, adjusts header levels for cross-file includes, and embeds:
+
+Specification title: From specifications.header_ast, wrapped in a title Div
+Spec objects: All objects belonging to the specification, in file_seq order, with their rendered body AST
+Spec floats: Placeholder CodeBlocks for floats at their document positions (resolved later by the float emitter)
+Spec views: Placeholder CodeBlocks for views at their document positions (expanded later by the view emitter)
+
+The assembled document includes Pandoc metadata built from specification attributes (title, author, date). The result is a valid pandoc.Pandoc document suitable for format-specific output.
+<<<
+RATIONALE: >>>
+Decoupling parsing from rendering enables format-agnostic processing through the pipeline. Database-backed assembly allows cross-document operations (shared numbering, cross-references) that sequential file processing cannot achieve.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-23
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-AST
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-IR
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-004
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-OUT-002
+TITLE: Float Resolution
+STATEMENT: >>>
+The system shall replace Float placeholder blocks in the assembled document with their rendered content, using results from the TRANSFORM Phase phase.
+<<<
+DESCRIPTION: >>>
+After document assembly, the float emitter walks all blocks and replaces CodeBlock placeholders (identified by float labels) with rendered Div elements containing:
+
+Rendered content: The resolved_ast from spec_floats (SVG images for PlantUML, parsed tables for CSV, chart images for ECharts)
+Caption: A formatted caption with type prefix and sequential number (e.g., “Figure 1 – Diagram Title”)
+Semantic classes: CSS classes (speccompiler-float, speccompiler-caption, type-specific class) for format-specific styling
+Bookmark anchor: An identifier anchor for cross-reference navigation
+
+Floats whose resolved_ast is NULL (failed external renders) are preserved as error placeholders.
+<<<
+RATIONALE: >>>
+Separating float resolution from assembly enables parallel external rendering during TRANSFORM while maintaining correct document insertion order during EMIT.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-04
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-22
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-004
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-OUT-003
+TITLE: Float Numbering
+STATEMENT: >>>
+The system shall assign sequential numbers to Floats within their Counter Group, producing a single numbering sequence across all documents in the project.
+<<<
+DESCRIPTION: >>>
+During the TERM-22 phase, the float numberer:
+
+Queries all floats across all specifications, ordered by file_seq
+Groups floats by their counter_group (e.g., FIGURE, TABLE, LISTING, EQUATION)
+Assigns monotonically increasing numbers within each group (starting at 1)
+Float types sharing a counter_group share the same sequence (e.g., FIGURE, CHART, and PLANTUML all increment the “FIGURE” counter)
+
+The assigned numbers are stored in spec_floats.number and used for caption formatting and cross-reference display text.
+<<<
+RATIONALE: >>>
+Consistent cross-document numbering prevents duplicate figure/table numbers and enables stable cross-references. Counter group sharing allows semantically related types (all visual content) to form natural sequences.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-22
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-04
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-28
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-004
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-OUT-004
+TITLE: Multi-Format Output
+STATEMENT: >>>
+The system shall generate output documents in all formats specified by the project configuration, skipping outputs whose Processed Intermediate Representation hash matches the cached value.
+<<<
+DESCRIPTION: >>>
+The emitter orchestrator iterates over config.outputs (an array of {format, path} pairs) and for each specification:
+
+Serializes the assembled Pandoc document to an intermediate JSON file
+Checks the output cache (is_output_current()) and skips generation when the P-IR hash matches
+Applies format-specific Pandoc Lua filters (e.g., docx.lua, html.lua from the model’s filters/ directory)
+Invokes Pandoc for format conversion
+Runs format-specific postprocessors after Pandoc generation completes
+Cleans up intermediate JSON files
+
+Supported output formats: DOCX, HTML5, Markdown, JSON. Multiple formats can be generated from a single pipeline execution.
+<<<
+RATIONALE: >>>
+Single-source multi-target publication eliminates content duplication. Cache-aware skipping avoids regenerating unchanged outputs, reducing build times for large specification projects.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-PIR
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-004
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-OUT-005
+TITLE: DOCX Generation
+STATEMENT: >>>
+The system shall generate DOCX output with style customization via preset-based reference document generation and OOXML post-processing.
+<<<
+DESCRIPTION: >>>
+DOCX output generation follows this sequence:
+
+Preset loading: Loads style preset definitions from models/{model}/styles/presets/ with extends-chain merging and circular dependency detection
+Reference document generation: Generates a reference.docx from the resolved preset containing custom Word styles (headings, captions, code blocks, table styles)
+Pandoc conversion: Invokes Pandoc with --reference-doc pointing to the generated reference and format-specific Lua filters
+OOXML post-processing: Modifies the DOCX archive to apply style fixups, numbering definitions, and structural corrections that Pandoc cannot produce natively
+
+The reference document is cached and regenerated only when the preset hash changes.
+<<<
+RATIONALE: >>>
+Preset-based styling enables consistent corporate branding without manual Word template editing. OOXML post-processing addresses Pandoc limitations for advanced Word formatting requirements.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: SF-004
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-OUT-006
+TITLE: HTML5 Generation
+STATEMENT: >>>
+The system shall generate standalone HTML5 output with table of contents, section numbering, and embedded resources when configured.
+<<<
+DESCRIPTION: >>>
+HTML5 output generation follows this sequence:
+
+Pandoc conversion: Invokes Pandoc with HTML5-specific options from project configuration (number_sections, table_of_contents, toc_depth, standalone, embed_resources)
+Resource embedding: When embed_resources is enabled, all CSS, JavaScript, and image assets are embedded inline for single-file distribution
+Search index: When TERM-FTS tables are populated, the HTML5 postprocessor bundles the search index for client-side full-text search
+Internal links: Cross-reference (@) links resolve to #anchor URLs for in-page navigation
+
+Configuration is specified in the html5: section of project.yaml.
+<<<
+RATIONALE: >>>
+Standalone HTML5 with embedded resources enables documentation distribution without web server infrastructure. FTS integration provides search capability for large specification sets.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-FTS
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-004
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-OUT-007
+TITLE: Full-Text Search Indexing
+STATEMENT: >>>
+The system shall populate dic:full-text-search virtual tables during the dic:emit-phase phase to enable full-text search across specification content.
+
+Once documents are assembled and published, the system must also guarantee that its builds are reproducible and its processing is auditable. The following section addresses these integrity concerns.
+<<<
+DESCRIPTION: >>>
+The FTS indexer creates and populates three FTS5 virtual tables with Porter stemming:
+
+fts_objects: Indexes spec object titles and body text, keyed by identifier and spec_id
+fts_attributes: Indexes attribute names and string values, keyed by owner_ref and spec_id
+fts_floats: Indexes float captions and raw source content, keyed by identifier and spec_id
+
+TERM-AST content is converted to plain text before indexing.
+<<<
+RATIONALE: >>>
+Full-text search enables users to find specification content across large document sets. FTS5 with Porter stemming provides standard information retrieval capabilities suitable for technical documentation.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-AST
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-004
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[/SOFTWARE_FUNCTION]]
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SRS-001-sec9
+TITLE: Audit & Integrity Requirements
+STATEMENT: >>>
+<<<
+
+[[SOFTWARE_FUNCTION]]
+UID: SF-006
+TITLE: Audit and Integrity
+STATEMENT: >>>
+Deterministic compilation, reproducible builds, and audit trail integrity.
+<<<
+DESCRIPTION: >>>
+Encompasses content-addressed hashing for incremental build detection, structured TERM-NDJSON logging for audit trails, include dependency tracking for proper cache invalidation, and structured diagnostic reporting for error traceability.
+<<<
+RATIONALE: >>>
+Certification environments require reproducible builds and auditable processing trails for traceability evidence.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-NDJSON
+  ROLE: Dictionary Reference
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-AUDIT-001
+TITLE: Content-Addressed Hashing
+STATEMENT: >>>
+The system shall compute SHA1 content hashes for all source documents and include files to enable change detection.
+<<<
+DESCRIPTION: >>>
+The build engine computes SHA1 hashes for each document. Hashes are compared against cached values in the source_files table:
+
+If the content hash matches the cached hash, the system checks include file hashes
+If all hashes match, the document is skipped (cached TERM-IR state is reused)
+If any hash differs, the document is rebuilt from source
+After successful rebuild (no TERM-21 errors), hashes are updated in the source_files table
+
+This provides O(1) change detection without parsing unchanged documents.
+<<<
+RATIONALE: >>>
+Content-addressed hashing provides reliable change detection independent of filesystem timestamps. Deferred hash updates prevent cache poisoning from partial or failed builds.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-IR
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-21
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-006
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-AUDIT-002
+TITLE: Include Dependency Tracking
+STATEMENT: >>>
+When a document contains include directives, the system shall track all included file dependencies in a build graph and detect circular includes.
+<<<
+DESCRIPTION: >>>
+Before TERM-15 execution, the include handler expands .include code blocks by:
+
+Resolving include paths relative to the source file directory
+Detecting circular includes via a processed-file set (raises error on cycle)
+Recursively expanding nested includes up to a bounded maximum depth
+Recording all include paths and their SHA1 hashes in the build_graph table (root_path, node_path, node_sha1)
+
+Subsequent builds use this graph to check if any included file has changed, triggering a rebuild of the root document when needed.
+<<<
+RATIONALE: >>>
+Include dependency tracking ensures that changes to sub-files correctly invalidate parent documents. Cycle detection prevents infinite recursion in include hierarchies.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-15
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-006
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-AUDIT-003
+TITLE: Structured Diagnostic Reporting
+STATEMENT: >>>
+The system shall collect and report processing errors and warnings with source location information throughout all pipeline phases.
+<<<
+DESCRIPTION: >>>
+The diagnostics collector provides structured error/warning reporting:
+
+Collection: TERM-16s report issues via diagnostics:error(file, line, code, msg) and diagnostics:warn(file, line, code, msg)
+Structured data: Each diagnostic record contains file path, line number, diagnostic code, and human-readable message
+Severity control: The has_errors() method enables the TERM-15 to determine abort conditions after the TERM-21 phase
+Output integration: Diagnostics are emitted through the structured logger with file and line context
+
+Diagnostic codes follow domain prefixes (e.g., SD-102 for invalid enum, SD-201 for missing required attribute, SD-301 for dangling reference).
+<<<
+RATIONALE: >>>
+Structured diagnostics with source locations enable IDE integration, CI/CD reporting, and user-friendly error resolution. Machine-parseable diagnostic codes enable automated error classification.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-16
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-15
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-21
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-006
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-AUDIT-004
+TITLE: Structured Logging
+STATEMENT: >>>
+The system shall provide Newline-Delimited JSON structured logging with TTY-aware output formatting.
+<<<
+DESCRIPTION: >>>
+The logging subsystem supports two output modes selected automatically or via configuration:
+
+NDJSON mode (non-TTY): Outputs one JSON object per line with fields: level, message, timestamp, and optional context. Suitable for CI/CD log aggregation and jq filtering
+Console mode (TTY): Outputs human-readable formatted messages with ANSI color coding (respects NO_COLOR environment variable). Includes timestamp and level indicator
+
+Log levels: DEBUG, INFO, WARN, ERROR. Configured via config.logging.level with environment override SPECCOMPILER_LOG_LEVEL.
+<<<
+RATIONALE: >>>
+NDJSON enables machine-parseable audit trails for certification environments. TTY-aware formatting provides developer ergonomics during interactive use. The NO_COLOR standard ensures accessibility compliance.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-NDJSON
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-006
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[HIGH_LEVEL_REQUIREMENT]]
+UID: HLR-AUDIT-005
+TITLE: Build Reproducibility
+STATEMENT: >>>
+Given identical source files, project configuration, and tool versions, the system shall produce identical outputs.
+
+The glossary below defines the domain vocabulary used throughout this specification. Each term corresponds to a cross-reference encountered in the requirements above and is defined here with its purpose, scope, and usage context.
+<<<
+DESCRIPTION: >>>
+Build reproducibility is ensured through:
+
+Deterministic parsing: Content-addressable SHA1 identifiers ensure consistent object identity
+Deterministic ordering: TERM-25 with alphabetic tie-breaking produces the same TERM-16 execution order
+Deterministic numbering: Float numbers assigned by file_seq ordering, which is stable across builds
+Deterministic output: Pandoc invoked with the same arguments and reference documents produces identical output
+
+Cache invalidation is based solely on content hashes, not filesystem timestamps or system state.
+<<<
+RATIONALE: >>>
+Reproducible builds are a fundamental certification requirement in aerospace and safety-critical domains. Content-addressed processing ensures that build artifacts can be independently verified.
+<<<
+STATUS: Approved
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-25
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: TERM-16
+  ROLE: Dictionary Reference
+- TYPE: Parent
+  VALUE: SF-006
+  ROLE: Belongs To
+
+[[/HIGH_LEVEL_REQUIREMENT]]
+
+[[/SOFTWARE_FUNCTION]]
+
+[[/SECTION]]
+
+[[SECTION]]
+UID: SRS-001-sec10
+TITLE: System Concepts
+STATEMENT: >>>
+<<<
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-COMMONSPEC
+TITLE: CommonSpec
+STATEMENT: >>>
+A structured Markdown language for authoring typed, traceable specifications.
+<<<
+DESCRIPTION: >>>
+Purpose: Defines the input language for SpecCompiler. Extends standard Markdown (CommonMark) with six constructs: specifications, spec objects, spec floats, attributes, spec relations, and spec views.
+
+Architecture: CommonSpec (language) compiles into SpecIR (intermediate representation) via SpecCompiler (compiler).
+
+Specification: See the CommonSpec Language Specification (docs/commonspec/) for the formal definition.
+<<<
+DOMAIN: Core
+TERM: CommonSpec
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-SPECIR
+TITLE: SpecIR
+STATEMENT: >>>
+A typed relational intermediate representation for specifications, stored in SQLite.
+<<<
+ACRONYM: SpecIR
+DESCRIPTION: >>>
+Purpose: Provides a portable, queryable storage format for specification data. Compilation target for CommonSpec and interchange format for other tools (ReqIF, DOORS CSV, SQL).
+
+Schema: Two core layers: Type System tables (metamodel) and Content tables (data). Build infrastructure and FTS tables are not part of the SpecIR standard.
+
+Specification: See the SpecIR Schema Specification (docs/specir/) for the formal definition.
+<<<
+DOMAIN: Core
+TERM: Specification Intermediate Representation
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-20
+TITLE: ANALYZE Phase
+STATEMENT: >>>
+The second phase in the pipeline that resolves references and infers types.
+<<<
+DESCRIPTION: >>>
+Purpose: Resolves cross-references between spec objects and infers missing type information.
+
+Position: Second phase after INITIALIZE, before TRANSFORM.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-30
+TITLE: Build Cache
+STATEMENT: >>>
+SHA1 hashes for detecting document changes.
+<<<
+DESCRIPTION: >>>
+Purpose: Stores content hashes to detect which documents have changed since last build.
+
+Implementation: Compares current file hash against cached hash to skip unchanged files.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-28
+TITLE: Counter Group
+STATEMENT: >>>
+Float types sharing a numbering sequence.
+<<<
+DESCRIPTION: >>>
+Purpose: Groups related float types to share sequential numbering.
+
+Example: FIG and DIAGRAM types may share a counter, producing Figure 1, Figure 2, etc.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-36
+TITLE: CSC (Computer Software Component)
+STATEMENT: >>>
+A MIL-STD-498 architectural decomposition element representing a subsystem, layer, package, or service.
+<<<
+DESCRIPTION: >>>
+Purpose: Groups software units into higher-level structural components for design allocation.
+
+Examples: src/core, src/db, src/infra.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-37
+TITLE: CSU (Computer Software Unit)
+STATEMENT: >>>
+A MIL-STD-498 implementation decomposition element representing a source file or code unit.
+<<<
+DESCRIPTION: >>>
+Purpose: Captures file-level implementation units allocated to functional descriptions.
+
+Examples: src/core/pipeline.lua, src/db/manager.lua.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-35
+TITLE: Data View
+STATEMENT: >>>
+A Lua module generating data for chart injection.
+<<<
+DESCRIPTION: >>>
+Purpose: Produces structured data that can be injected into chart floats.
+
+Implementation: Lua scripts that query database and return chart-compatible data structures.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-EAV
+TITLE: EAV Model
+STATEMENT: >>>
+Entity-Attribute-Value pattern for typed attribute storage.
+<<<
+DESCRIPTION: >>>
+Purpose: Flexible schema for storing typed attributes on spec objects.
+
+Structure: Entity (spec object), Attribute (key name), Value (typed content).
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-23
+TITLE: EMIT Phase
+STATEMENT: >>>
+The final phase in the pipeline that assembles and outputs documents.
+<<<
+DESCRIPTION: >>>
+Purpose: Assembles transformed content and writes final output documents.
+
+Position: Final phase after VERIFY.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-04
+TITLE: Float
+STATEMENT: >>>
+A numbered element (table, figure, diagram) with caption and cross-reference. See Spec Float for full definition.
+<<<
+RELATIONS:
+- TYPE: Parent
+  VALUE: SpecIR-03
+  ROLE: Dictionary Reference
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-34
+TITLE: External Renderer
+STATEMENT: >>>
+Subprocess-based rendering for types like PLANTUML, CHART.
+<<<
+DESCRIPTION: >>>
+Purpose: Delegates rendering to external tools via subprocess execution.
+
+Examples: PlantUML JAR for diagrams, chart libraries for data visualization.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-16
+TITLE: Handler
+STATEMENT: >>>
+A modular component that processes specific content types through pipeline phases.
+<<<
+DESCRIPTION: >>>
+Purpose: Encapsulates processing logic for a content type across all pipeline phases.
+
+Structure: Implements phase methods (initialize, analyze, verify, transform, emit) for its content type.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-19
+TITLE: INITIALIZE Phase
+STATEMENT: >>>
+The first phase in the pipeline that parses AST and populates IR containers.
+<<<
+DESCRIPTION: >>>
+Purpose: Parses markdown AST and populates intermediate representation containers.
+
+Position: First phase, entry point for document processing.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-33
+TITLE: Model
+STATEMENT: >>>
+A collection of type definitions, handlers, and styles for a domain.
+<<<
+DESCRIPTION: >>>
+Purpose: Bundles related type definitions, handlers, and styling for specific documentation domains.
+
+Examples: SRS model for software requirements, HRS model for hardware requirements.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-31
+TITLE: Output Cache
+STATEMENT: >>>
+Timestamps for incremental output generation.
+<<<
+DESCRIPTION: >>>
+Purpose: Tracks when outputs were last generated to enable incremental builds.
+
+Implementation: Compares source modification time against cached output timestamp.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-17
+TITLE: Phase
+STATEMENT: >>>
+A distinct stage in document processing with specific responsibilities.
+<<<
+DESCRIPTION: >>>
+Purpose: Separates document processing into well-defined sequential stages.
+
+Phases: INITIALIZE, ANALYZE, TRANSFORM, VERIFY, EMIT.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-15
+TITLE: Pipeline
+STATEMENT: >>>
+The 5-phase processing system (INITIALIZE -> ANALYZE -> TRANSFORM -> VERIFY -> EMIT).
+<<<
+DESCRIPTION: >>>
+Purpose: Orchestrates document processing through sequential phases.
+
+Flow: Each phase completes for all handlers before the next phase begins.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-24
+TITLE: Prerequisites
+STATEMENT: >>>
+Handler dependencies that determine execution order.
+<<<
+DESCRIPTION: >>>
+Purpose: Declares which handlers must complete before a given handler can execute.
+
+Usage: Handlers declare prerequisites to ensure data dependencies are satisfied.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-25
+TITLE: Topological Sort
+STATEMENT: >>>
+Kahn’s algorithm for ordering handlers by prerequisites.
+<<<
+DESCRIPTION: >>>
+Purpose: Determines valid execution order for handlers based on dependencies.
+
+Algorithm: Uses Kahn’s algorithm to produce a topologically sorted handler sequence.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-22
+TITLE: TRANSFORM Phase
+STATEMENT: >>>
+The third phase in the pipeline that materializes views and rewrites content.
+<<<
+DESCRIPTION: >>>
+Purpose: Materializes database views into content and applies content transformations.
+
+Position: Third phase after ANALYZE, before VERIFY.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-27
+TITLE: Type Alias
+STATEMENT: >>>
+Alternative syntax identifier for a type (e.g., “csv” -> “TABLE”).
+<<<
+DESCRIPTION: >>>
+Purpose: Provides shorthand or alternative names for types.
+
+Example: csv is an alias for the TABLE type in float definitions.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-38
+TITLE: Type Loader
+STATEMENT: >>>
+System that discovers and loads type handlers from model directories.
+<<<
+DESCRIPTION: >>>
+Purpose: Dynamically discovers and instantiates type handlers from model definitions.
+
+Implementation: Scans model directories for handler definitions and registers them.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-26
+TITLE: Type Registry
+STATEMENT: >>>
+Database tables (spec_*_types) storing type definitions.
+<<<
+DESCRIPTION: >>>
+Purpose: Stores type definitions including attributes, aliases, and validation rules.
+
+Tables: spec_object_types, spec_float_types, spec_attribute_types, etc.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-21
+TITLE: VERIFY Phase
+STATEMENT: >>>
+The fourth phase in the pipeline that validates content via proof views.
+<<<
+DESCRIPTION: >>>
+Purpose: Validates document content using proof views and constraint checking.
+
+Position: Fourth phase after TRANSFORM, before EMIT.
+<<<
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-AST
+TITLE: Abstract Syntax Tree
+STATEMENT: >>>
+The tree representation of document structure produced by Pandoc.
+<<<
+ACRONYM: AST
+DESCRIPTION: >>>
+Purpose: Represents document structure as a hierarchical tree of elements.
+
+Source: Pandoc parses Markdown and produces JSON AST.
+
+Usage: Handlers walk the AST to extract spec objects, floats, and relations.
+<<<
+DOMAIN: Core
+TERM: Abstract Syntax Tree
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-FTS
+TITLE: Full-Text Search
+STATEMENT: >>>
+FTS5 virtual tables enabling search across specification content.
+<<<
+ACRONYM: FTS
+DESCRIPTION: >>>
+Purpose: Indexes specification text for fast full-text search queries.
+
+Implementation: SQLite FTS5 virtual tables populated during EMIT phase.
+
+Usage: Web application uses FTS for search functionality.
+<<<
+DOMAIN: Database
+TERM: Full-Text Search
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-HLR
+TITLE: High-Level Requirement
+STATEMENT: >>>
+A top-level functional or non-functional requirement that captures what the system must do or satisfy.
+<<<
+ACRONYM: HLR
+DESCRIPTION: >>>
+Purpose: Defines system-level requirements that guide design and implementation.
+
+Traceability: HLRs trace to verification cases (VC) and are realized by functional descriptions (FD).
+<<<
+DOMAIN: Core
+TERM: High-Level Requirement
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-IR
+TITLE: Intermediate Representation
+STATEMENT: >>>
+The database-backed representation of parsed document content.
+<<<
+ACRONYM: IR
+DESCRIPTION: >>>
+Purpose: Stores parsed specification content in queryable form.
+
+Storage: SQLite database with spec_objects, spec_floats, spec_relations tables.
+
+Lifecycle: Populated during INITIALIZE, queried and modified through remaining phases.
+<<<
+DOMAIN: Core
+TERM: Intermediate Representation
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-PID
+TITLE: Project Identifier
+STATEMENT: >>>
+A unique identifier assigned to spec objects for cross-referencing (e.g., @REQ-001).
+<<<
+ACRONYM: PID
+DESCRIPTION: >>>
+Purpose: Provides unique, human-readable identifiers for traceability and cross-referencing.
+
+Syntax: Written as @PID in header text (e.g., ## HLR: Requirement Title @REQ-001).
+
+Auto-generation: PIDs can be auto-generated from type prefix and sequence number.
+<<<
+DOMAIN: Core
+TERM: Project Identifier
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-PROOF
+TITLE: Proof View
+STATEMENT: >>>
+A SQL query that validates data integrity constraints during the VERIFY phase.
+<<<
+ACRONYM: -
+DESCRIPTION: >>>
+Purpose: Defines validation rules as SQL queries that detect specification errors.
+
+Execution: Run during the VERIFY phase; violations are reported as diagnostics.
+
+Examples: Missing required attributes, unresolved relations, cardinality violations.
+<<<
+DOMAIN: Core
+TERM: Proof View
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-SQLITE
+TITLE: SQLite Database
+STATEMENT: >>>
+The embedded database engine storing the IR and build cache.
+<<<
+ACRONYM: -
+DESCRIPTION: >>>
+Purpose: Provides persistent, portable storage for the intermediate representation.
+
+Benefits: Single-file storage, ACID transactions, SQL query capability.
+
+Usage: All pipeline phases read/write to SQLite via the database manager.
+<<<
+DOMAIN: Database
+TERM: SQLite Database
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-TRACEABLE
+TITLE: Traceable Object
+STATEMENT: >>>
+A specification object that participates in traceability relationships.
+<<<
+ACRONYM: -
+DESCRIPTION: >>>
+Purpose: Base type for objects that can be linked via traceability relations.
+
+Types: Any spec object type registered in the model (e.g., HLR, LLR, SECTION).
+
+Relations: Model-defined relation types (e.g., XREF_FIGURE, XREF_CITATION) inferred by specificity matching.
+<<<
+DOMAIN: Core
+TERM: Traceable Object
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-TYPE
+TITLE: Type
+STATEMENT: >>>
+A category definition that governs behavior for objects, floats, relations, or views.
+<<<
+ACRONYM: -
+DESCRIPTION: >>>
+Purpose: Defines the schema, validation rules, and rendering behavior for a category of elements.
+
+Categories: Object types (HLR, SECTION), float types (FIGURE, TABLE), relation types (TRACES_TO), view types (TOC, LOF).
+
+Registration: Types are loaded from model directories and stored in the type registry.
+<<<
+DOMAIN: Core
+TERM: Type
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-VC
+TITLE: Verification Case
+STATEMENT: >>>
+A test specification that verifies a requirement or set of requirements.
+<<<
+ACRONYM: VC
+DESCRIPTION: >>>
+Purpose: Defines how requirements are verified through test procedures and expected results.
+
+Traceability: VCs trace to HLRs via traceability attribute links.
+
+Naming: VC PIDs follow the pattern VC-{category}-{seq} (e.g., VC-PIPE-001).
+<<<
+DOMAIN: Core
+TERM: Verification Case
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-COMPOSITE
+TITLE: Composite Object Type
+STATEMENT: >>>
+A spec object type whose instances receive hierarchical PIDs qualified by the parent specification PID.
+<<<
+DESCRIPTION: >>>
+Purpose: Distinguishes object types that represent document structure (e.g., SECTION) from traceable types that receive standalone PIDs (e.g., HLR, VC).
+
+PID behavior: Composite objects get hierarchical PIDs derived from the specification PID (e.g., SRS-sec1.2.3). Non-composite objects get independent PIDs from their pid_prefix and pid_format (e.g., HLR-001).
+
+Configuration: Set via is_composite = true in the type definition module.
+<<<
+DOMAIN: Core
+TERM: Composite Object Type
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-SELECTOR
+TITLE: Relation Selector
+STATEMENT: >>>
+The URL scheme portion of a Markdown link that drives relation type inference.
+<<<
+DESCRIPTION: >>>
+Purpose: Identifies what kind of relation a Markdown link represents, enabling type-driven inference.
+
+Selectors: @ (PID reference, e.g., [HLR-001](@)), # (label reference, e.g., [fig:diagram](#)), @cite (bibliographic citation).
+
+Configuration: Each relation type declares a link_selector value in spec_relation_types. Selectors are model-defined, not hardcoded.
+<<<
+DOMAIN: Core
+TERM: Relation Selector
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-SPECIFICITY
+TITLE: Specificity Scoring
+STATEMENT: >>>
+The constraint-matching score used to select the best relation type during type inference.
+<<<
+DESCRIPTION: >>>
+Purpose: Resolves ambiguity when multiple relation types match a given link by selecting the most specific type.
+
+Algorithm: Each non-NULL constraint match across four dimensions (selector, source_attribute, source_type, target_type) adds one point. The highest total score wins. Ties mark the relation as ambiguous.
+
+Example: A relation type with constraints on selector + source_type + target_type (score 3) wins over one with only selector (score 1).
+<<<
+DOMAIN: Core
+TERM: Specificity Scoring
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-PIR
+TITLE: Processed Intermediate Representation
+STATEMENT: >>>
+The complete specification state after all pipeline phases have executed, captured as a hash for output cache invalidation.
+<<<
+ACRONYM: P-IR
+DESCRIPTION: >>>
+Purpose: Provides a single hash that represents the fully processed state of a specification, including all resolved relations, materialized views, and transformed content.
+
+Usage: The output cache stores the P-IR hash alongside each generated output file. When rebuilding, the system compares the current P-IR hash to the cached hash to determine if output regeneration is needed.
+
+Distinction: Unlike the build cache (which tracks source file hashes), the P-IR hash captures the post-processing state, detecting changes from cross-document operations.
+<<<
+DOMAIN: Core
+TERM: Processed Intermediate Representation
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-NDJSON
+TITLE: Newline-Delimited JSON
+STATEMENT: >>>
+A text format where each line is a valid JSON object, used for structured log output.
+<<<
+ACRONYM: NDJSON
+DESCRIPTION: >>>
+Purpose: Provides machine-parseable structured logging suitable for CI/CD log aggregation and filtering with tools like jq.
+
+Format: One JSON object per line with fields: level, message, timestamp, and optional context fields.
+
+Usage: The logger emits NDJSON when output is not connected to a TTY (e.g., piped to a file or running in CI).
+<<<
+DOMAIN: Infrastructure
+TERM: Newline-Delimited JSON
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-PROOFPOLICY
+TITLE: Proof Policy
+STATEMENT: >>>
+A configuration mapping from proof view policy_key to severity level, controlling which violations are reported and at what severity.
+<<<
+DESCRIPTION: >>>
+Purpose: Allows projects to control validation strictness by mapping each proof view to a severity level.
+
+Severity levels: error (blocks output generation), warn (reported but build continues), ignore (suppressed).
+
+Configuration: Set in the validation: section of project.yaml (e.g., traceability_hlr_to_vc: warn).
+
+Default: When a policy_key is not configured, the system applies its built-in default severity.
+<<<
+DOMAIN: Core
+TERM: Proof Policy
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-DIAGNOSTIC
+TITLE: Diagnostic Record
+STATEMENT: >>>
+A structured error or warning record emitted by TERM-16s during TERM-15 processing.
+<<<
+DESCRIPTION: >>>
+Purpose: Provides machine-parseable and human-readable feedback on specification errors and warnings throughout all pipeline phases.
+
+Fields: Each record contains file (source path), line (source line number), code (domain-prefixed identifier, e.g., SD-301), and msg (human-readable description).
+
+Severity: Errors trigger abort after TERM-21 phase; warnings are reported but do not block output generation.
+<<<
+DOMAIN: Core
+TERM: Diagnostic Record
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-21
+  ROLE: Traces To
+- TYPE: Parent
+  VALUE: TERM-16
+  ROLE: Traces To
+- TYPE: Parent
+  VALUE: TERM-15
+  ROLE: Traces To
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-BUILDGRAPH
+TITLE: Build Graph
+STATEMENT: >>>
+A dependency tracking structure recording include file hierarchies for incremental rebuild support.
+<<<
+DESCRIPTION: >>>
+Purpose: Tracks which files are included by each root document, enabling change detection across include hierarchies.
+
+Storage: Stored in the build_graph table with columns root_path (the including document), node_path (the included file), and node_sha1 (content hash at build time).
+
+Usage: Queried by TERM-30 is_document_dirty_with_includes() to determine if any included file has changed since the last successful build.
+<<<
+DOMAIN: Database
+TERM: Build Graph
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-30
+  ROLE: Traces To
+
+[[/DICTIONARY_ENTRY]]
+
+[[DICTIONARY_ENTRY]]
+UID: TERM-PLACEHOLDERBLOCK
+TITLE: Placeholder Block
+STATEMENT: >>>
+A CodeBlock marker inserted during document assembly for deferred SpecIR-03 and SpecIR-06 resolution.
+<<<
+DESCRIPTION: >>>
+Purpose: Marks positions in the assembled Pandoc document where floats and views will be substituted during the TERM-23 phase.
+
+Mechanism: During assembly, CSU-034 inserts CodeBlock elements at the correct file_seq positions. Downstream handlers (CSU-035 for floats, CSU-036 for views) match these placeholders by label and replace them with rendered content.
+
+Lifecycle: Created during assembly, consumed during float/view emission, never present in final output.
+<<<
+DOMAIN: Pipeline
+TERM: Placeholder Block
+RELATIONS:
+- TYPE: Parent
+  VALUE: TERM-23
+  ROLE: Traces To
+- TYPE: Parent
+  VALUE: SpecIR-03
+  ROLE: Traces To
+- TYPE: Parent
+  VALUE: SpecIR-06
+  ROLE: Traces To
+
+[[/DICTIONARY_ENTRY]]
+
+[[/SECTION]]
