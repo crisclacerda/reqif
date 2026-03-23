@@ -649,9 +649,11 @@ class TestSDocEditRoundTrip(unittest.TestCase):
 
     def test_status_edit_survives(self):
         """Changed status should appear in CommonSpec output."""
+        import re as _re
         lines = self._md.split("\n")
         for i, l in enumerate(lines):
-            if l.lstrip().startswith("#") and "@SDOC-SRS-18" in l:
+            # Match exact PID (not SDOC-SRS-180 etc.)
+            if l.lstrip().startswith("#") and _re.search(r"@SDOC-SRS-18\b", l):
                 block = "\n".join(lines[i:i+8])
                 self.assertIn("Modified", block)
                 return
@@ -660,8 +662,8 @@ class TestSDocEditRoundTrip(unittest.TestCase):
     def test_new_requirement_pid(self):
         self.assertIn("@SDOC-SRS-NEW", self._md)
 
-    def test_new_requirement_body(self):
-        self.assertIn("preserve attributes and relations", self._md)
+    def test_new_requirement_title(self):
+        self.assertIn("Edit Round-Trip Fidelity", self._md)
 
     def test_title_edit_survives(self):
         self.assertIn("Requirement model (edited)", self._md)

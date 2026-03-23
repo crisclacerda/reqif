@@ -372,6 +372,38 @@ class TestImport(unittest.TestCase):
 
         conn.close()
 
+    def test_import_id_map_uses_pid_key(self):
+        """id_map for spec_objects should be keyed by PID, not rowid."""
+        conn = _make_in_memory_db()
+        bundle = _make_sample_bundle()
+        import_reqif(bundle, conn, spec_slug="test")
+
+        m = IdMap(conn)
+        # PID "HLR-001" → original ReqIF id "SO-1"
+        self.assertEqual(m.get_reqif_id("spec_objects", "HLR-001"), "SO-1")
+        self.assertEqual(m.get_reqif_id("spec_objects", "HLR-002"), "SO-2")
+        # Old rowid-based key should NOT exist
+        self.assertIsNone(m.get_reqif_id("spec_objects", "1"))
+        self.assertIsNone(m.get_reqif_id("spec_objects", "2"))
+
+        conn.close()
+
+    def test_import_stores_pid_in_target_text(self):
+        """spec_relations.target_text should contain the target's PID."""
+        conn = _make_in_memory_db()
+        bundle = _make_sample_bundle()
+        spec_id = import_reqif(bundle, conn, spec_slug="test")
+
+        row = conn.execute(
+            "SELECT target_text FROM spec_relations WHERE specification_ref = ?",
+            (spec_id,),
+        ).fetchone()
+        self.assertIsNotNone(row)
+        # target_text should be the PID (HLR-002), not the ReqIF UUID (SO-2)
+        self.assertEqual(row[0], "HLR-002")
+
+        conn.close()
+
 
 class TestExport(unittest.TestCase):
     def _make_populated_db(self) -> sqlite3.Connection:
@@ -438,6 +470,84 @@ class TestExport(unittest.TestCase):
         self.assertIn("ReqIF.Name", attr_names)
         self.assertIn("ReqIF.Text", attr_names)
 
+        conn.close()
+
+
+    def test_export_includes_float_content(self):
+        """Float table content should appear in the parent object's ReqIF.Text."""
+        conn = self._make_populated_db()
+        # Add float type and a float attached to object 1 (SEC-001).
+        conn.execute(
+            "INSERT INTO spec_float_types "
+            "(identifier, long_name, caption_format) VALUES ('TABLE', 'Table', 'Table')"
+        )
+        conn.execute(
+            "INSERT INTO spec_floats "
+            "(specification_ref, type_ref, from_file, file_seq, label, "
+            " syntax_key, raw_content, parent_object_id, caption) "
+            "VALUES ('test', 'TABLE', '/test.md', 0, 'tbl:summary', "
+            " 'list-table', '- Col1, Col2\n- A, B', 1, 'Summary Table')"
+        )
+        conn.commit()
+        conn.row_factory = sqlite3.Row
+
+        bundle = export_reqif(conn, "test")
+        content = bundle.core_content.req_if_content
+        # Find the object that corresponds to SEC-001 (parent of the float)
+        for obj in content.spec_objects:
+            for attr in obj.attributes:
+                val = str(attr.value) if attr.value else ""
+                if "Col1" in val or "Summary Table" in val:
+                    conn.close()
+                    return  # PASS
+        conn.close()
+        self.fail("Float content not found in any ReqIF object body")
+
+
+class TestDecompilerFloats(unittest.TestCase):
+    """Test that decompiler renders floats as CommonSpec fenced code blocks."""
+
+    def test_decompile_renders_float(self):
+        conn = sqlite3.connect(":memory:")
+        conn.row_factory = sqlite3.Row
+        ensure_schema(conn)
+
+        conn.execute(
+            "INSERT INTO spec_object_types (identifier, long_name, is_default) "
+            "VALUES ('SECTION', 'Section', 1)"
+        )
+        conn.execute(
+            "INSERT INTO spec_float_types (identifier, long_name, caption_format) "
+            "VALUES ('TABLE', 'Table', 'Table')"
+        )
+        conn.execute(
+            "INSERT INTO specifications (identifier, root_path, long_name) "
+            "VALUES ('test', '/test.md', 'Test Doc')"
+        )
+        conn.execute(
+            "INSERT INTO spec_objects (id, specification_ref, type_ref, from_file, "
+            "file_seq, pid, title_text, level) "
+            "VALUES (1, 'test', 'SECTION', '/test.md', 0, 'SEC-001', 'Introduction', 2)"
+        )
+        conn.execute(
+            "INSERT INTO spec_floats (specification_ref, type_ref, from_file, file_seq, "
+            "label, syntax_key, raw_content, parent_object_id, caption) "
+            "VALUES ('test', 'TABLE', '/test.md', 0, 'tbl:summary', "
+            "'list-table', '- Col1, Col2\n- A, B', 1, 'Summary Table')"
+        )
+        conn.commit()
+
+        import tempfile, os
+        with tempfile.TemporaryDirectory() as tmp:
+            from reqif.specir.decompiler import decompile
+            files = decompile(conn, "test", tmp, overwrite=True)
+            self.assertTrue(files)
+            with open(files[0]) as f:
+                content = f.read()
+            self.assertIn("```", content)
+            self.assertIn("list-table", content)
+            self.assertIn("Col1", content)
+            self.assertIn("Summary Table", content)
         conn.close()
 
 

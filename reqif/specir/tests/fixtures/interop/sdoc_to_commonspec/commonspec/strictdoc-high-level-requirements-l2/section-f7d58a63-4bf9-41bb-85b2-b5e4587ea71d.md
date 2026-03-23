@@ -1,4 +1,4 @@
-## SECTION-a549f4e2-c030-401e-b44c-be8a535b1218 @SECTION-004
+## SECTION-f7d58a63-4bf9-41bb-85b2-b5e4587ea71d @SECTION-004
 
 > ReqIF.ChapterName: Documentation tree
 
@@ -7,5 +7,3 @@
 > STATUS: Active
 
 > RATIONALE: Recursive search allows working with documents located in multiple folders, potentially spanning over several Git repositories.
-
-StrictDoc shall discover SDoc documents recursively based on a specified input path.

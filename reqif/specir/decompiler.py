@@ -80,6 +80,55 @@ def _load_relations_by_source(conn: sqlite3.Connection, spec_id: str) -> Dict[in
     return result
 
 
+def _load_floats_by_parent(
+    conn: sqlite3.Connection, spec_id: str,
+) -> Dict[int, List[dict]]:
+    """Return {parent_object_id: [float_dict, ...]} for all floats in a spec."""
+    try:
+        rows = conn.execute(
+            "SELECT id, type_ref, parent_object_id, label, caption, "
+            "syntax_key, raw_content, resolved_ast, number "
+            "FROM spec_floats WHERE specification_ref = ? "
+            "ORDER BY file_seq",
+            (spec_id,),
+        ).fetchall()
+    except Exception:
+        return {}
+    result: Dict[int, List[dict]] = {}
+    for r in rows:
+        d = dict(r)
+        pid = d.get("parent_object_id")
+        if pid is not None:
+            result.setdefault(pid, []).append(d)
+    return result
+
+
+def _render_float(flt: dict) -> str:
+    """Render a float as a CommonSpec fenced code block."""
+    syntax_key = flt.get("syntax_key") or ""
+    label = flt.get("label") or ""
+    caption = flt.get("caption")
+    raw_content = flt.get("raw_content") or ""
+
+    # Build fence info: syntax_key:user_label
+    # Label is typically "tbl:summary" — extract user part after the prefix.
+    fence_info = syntax_key
+    if label:
+        parts = label.split(":", 1)
+        if len(parts) == 2:
+            fence_info = f"{syntax_key}:{parts[1]}"
+        else:
+            fence_info = f"{syntax_key}:{label}"
+
+    # Build the fence line with optional caption attribute.
+    if caption:
+        header = f'```{{{fence_info} caption="{caption}"}}'
+    else:
+        header = f"```{fence_info}"
+
+    return f"{header}\n{raw_content.rstrip()}\n```\n"
+
+
 def _load_enum_key(conn: sqlite3.Connection, enum_ref: str) -> Optional[str]:
     """Look up enum value key from its identifier."""
     row = conn.execute(
@@ -144,6 +193,7 @@ def _render_object(
     attrs: List[dict],
     relations: List[dict],
     level: int,
+    floats: Optional[List[dict]] = None,
 ) -> str:
     """Render a single spec object as CommonSpec markdown."""
     lines: List[str] = []
@@ -172,6 +222,11 @@ def _render_object(
     if body_md:
         lines.append(body_md)
         lines.append("")
+
+    # Float content (tables, diagrams) as fenced code blocks.
+    if floats:
+        for flt in floats:
+            lines.append(_render_float(flt))
 
     # Relations: [TARGET-PID](@)
     for rel in relations:
@@ -214,6 +269,7 @@ def _render_group(
     group: List[dict],
     attrs_by_obj: Dict[int, List[dict]],
     rels_by_src: Dict[int, List[dict]],
+    floats_by_parent: Optional[Dict[int, List[dict]]] = None,
 ) -> str:
     """Render a group of objects as markdown."""
     parts: List[str] = []
@@ -222,7 +278,8 @@ def _render_group(
         level = obj.get("level", 2)
         attrs = attrs_by_obj.get(oid, [])
         rels = rels_by_src.get(oid, [])
-        parts.append(_render_object(conn, obj, attrs, rels, level))
+        flts = (floats_by_parent or {}).get(oid, [])
+        parts.append(_render_object(conn, obj, attrs, rels, level, floats=flts))
     return "\n".join(parts)
 
 
@@ -276,6 +333,7 @@ def decompile(
     objects = _load_objects(conn, spec_id)
     attrs_by_obj = _load_attributes_by_object(conn, spec_id)
     rels_by_src = _load_relations_by_source(conn, spec_id)
+    floats_by_parent = _load_floats_by_parent(conn, spec_id)
 
     # Spec-level attributes (owner_object_id IS NULL, no float owner either).
     spec_attrs_rows = conn.execute(
@@ -297,7 +355,7 @@ def decompile(
         # Single file.
         parts: List[str] = [_render_specification_header(spec, spec_attrs, conn)]
         for group in h2_groups:
-            parts.append(_render_group(conn, group, attrs_by_obj, rels_by_src))
+            parts.append(_render_group(conn, group, attrs_by_obj, rels_by_src, floats_by_parent))
         content = "\n".join(parts)
         path = os.path.join(output_dir, f"{spec_slug}.md")
         if _write_file(path, content, overwrite):
@@ -319,7 +377,7 @@ def decompile(
                 counter += 1
             child_filenames.append(child_filename)
 
-            child_content = _render_group(conn, group, attrs_by_obj, rels_by_src)
+            child_content = _render_group(conn, group, attrs_by_obj, rels_by_src, floats_by_parent)
             child_path = os.path.join(child_dir, child_filename)
             if _write_file(child_path, child_content, overwrite):
                 generated.append(child_path)

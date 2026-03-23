@@ -38,7 +38,7 @@ from reqif.models.reqif_types import SpecObjectAttributeType
 from reqif.object_lookup import ReqIFObjectLookup
 from reqif.reqif_bundle import ReqIFBundle
 
-from .content_converter import attr_xhtml_to_html, body_to_html
+from .content_converter import ast_to_html, attr_xhtml_to_html, body_to_html
 from .id_map import IdMap
 from .xhtml import to_reqif_xhtml
 
@@ -120,6 +120,64 @@ def _load_attribute_values(conn: sqlite3.Connection, spec_id: str) -> Dict[str, 
     for r in rows:
         out.setdefault(str(r[0]), []).append(r)
     return out
+
+
+def _load_floats_by_parent(
+    conn: sqlite3.Connection, spec_id: str,
+) -> Dict[int, list]:
+    """Return {parent_object_id: [float_row, ...]} for all floats in a spec."""
+    try:
+        rows = conn.execute(
+            "SELECT id, type_ref, parent_object_id, label, caption, "
+            "syntax_key, raw_content, resolved_ast, number "
+            "FROM spec_floats WHERE specification_ref = ? "
+            "ORDER BY file_seq",
+            (spec_id,),
+        ).fetchall()
+    except Exception:
+        # Table may not exist in minimal/test databases.
+        return {}
+    out: Dict[int, list] = {}
+    for r in rows:
+        parent_id = r[2]
+        if parent_id is not None:
+            out.setdefault(parent_id, []).append(r)
+    return out
+
+
+def _float_to_html(float_row) -> Optional[str]:
+    """Convert a float row to an HTML fragment for embedding in ReqIF.Text."""
+    type_ref = str(float_row[1])
+    caption = float_row[4]
+    raw_content = float_row[6]
+    resolved_ast = float_row[7]
+    number = float_row[8]
+
+    html_parts: List[str] = []
+
+    if type_ref == "PLANTUML":
+        if raw_content:
+            escaped = raw_content.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            html_parts.append(f'<pre class="plantuml">{escaped}</pre>')
+    else:
+        # TABLE and other floats: convert resolved_ast to HTML via Pandoc
+        if resolved_ast:
+            table_html = ast_to_html(resolved_ast, strip_headers=False)
+            if table_html:
+                html_parts.append(table_html)
+        elif raw_content:
+            escaped = raw_content.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+            html_parts.append(f"<pre>{escaped}</pre>")
+
+    if not html_parts:
+        return None
+
+    content = "\n".join(html_parts)
+    if caption:
+        cap_escaped = caption.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+        cap_text = f"Figure {number}: {cap_escaped}" if number else cap_escaped
+        return f'<div class="float">{content}<p class="caption">{cap_text}</p></div>'
+    return f'<div class="float">{content}</div>'
 
 
 def _load_relations(conn: sqlite3.Connection, spec_id: str) -> list:
@@ -220,6 +278,7 @@ def export_reqif(conn: sqlite3.Connection, spec_id: str) -> ReqIFBundle:
 
     # ── spec objects + hierarchy ──
     objects = _load_spec_objects(conn, spec_id)
+    floats_by_parent = _load_floats_by_parent(conn, spec_id)
     (
         reqif_objects,
         reqif_object_id_by_sd_id,
@@ -227,6 +286,7 @@ def export_reqif(conn: sqlite3.Connection, spec_id: str) -> ReqIFBundle:
         objects, reqif_spec_object_types, core_defs,
         reqif_attr_defs_by_owner, attr_values_by_owner,
         enum_values_by_dt, datatype_types, id_map, now,
+        floats_by_parent,
     )
 
     hierarchy_tree = _build_hierarchy(objects)
@@ -435,6 +495,7 @@ def _build_spec_objects(
     objects, reqif_spec_object_types, core_defs,
     reqif_attr_defs_by_owner, attr_values_by_owner,
     enum_values_by_dt, datatype_types, id_map, now,
+    floats_by_parent=None,
 ):
     # Build enum lookup
     reqif_enum_id_by_sd: Dict[str, str] = {}
@@ -455,7 +516,8 @@ def _build_spec_objects(
         content_xhtml = row[6]
         ast_json = row[7] if len(row) > 7 else None
 
-        reqif_obj_id = id_map.ensure_reqif_id("spec_objects", sd_id, "SO")
+        # Use PID as the stable id_map key (survives DB rebuilds).
+        reqif_obj_id = id_map.ensure_reqif_id("spec_objects", pid, "SO")
         reqif_object_id_by_sd_id[sd_id] = reqif_obj_id
 
         values: List[SpecObjectAttribute] = []
@@ -473,6 +535,14 @@ def _build_spec_objects(
         ))
         # Resolve body HTML: prefer content_xhtml, fall back to ast→HTML
         body_html = body_to_html(ast_json=ast_json, content_xhtml=content_xhtml)
+
+        # Append float content (tables, diagrams) owned by this object.
+        if floats_by_parent:
+            for frow in floats_by_parent.get(int(sd_id), []):
+                fhtml = _float_to_html(frow)
+                if fhtml:
+                    body_html = (body_html or "") + "\n" + fhtml
+
         xhtml_value = to_reqif_xhtml(body_html or "")
         values.append(SpecObjectAttribute(
             attribute_type=SpecObjectAttributeType.XHTML,

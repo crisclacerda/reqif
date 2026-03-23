@@ -293,9 +293,18 @@ def _import_objects_and_hierarchy(
     attr_def_name_map: Dict[str, str],
     attr_def_prim_map: Dict[str, str],
     id_map: IdMap,
-) -> Dict[str, int]:
-    """Insert spec_objects and attribute values.  Returns reqif_obj_id → specir_obj_id."""
+) -> Tuple[Dict[str, int], Dict[int, str]]:
+    """Insert spec_objects and attribute values.
+
+    Returns
+    -------
+    obj_id_map : dict
+        ReqIF object identifier → SpecIR rowid.
+    rowid_to_reqif : dict
+        SpecIR rowid → ReqIF object identifier (for deferred id_map population).
+    """
     obj_id_map: Dict[str, int] = {}
+    rowid_to_reqif: Dict[int, str] = {}
 
     # Build a lookup: reqif_obj_id → ReqIFSpecObject
     obj_lookup: Dict[str, ReqIFSpecObject] = {}
@@ -340,7 +349,7 @@ def _import_objects_and_hierarchy(
             )
             specir_obj_id = cursor.lastrowid
             obj_id_map[obj.identifier] = specir_obj_id
-            id_map.put("spec_objects", str(specir_obj_id), obj.identifier)
+            rowid_to_reqif[specir_obj_id] = obj.identifier
 
             # Custom attributes (non-core)
             for attr in obj.attributes:
@@ -354,7 +363,7 @@ def _import_objects_and_hierarchy(
                     attr.value, primitive, attr.attribute_type, enum_rev,
                 )
 
-    return obj_id_map
+    return obj_id_map, rowid_to_reqif
 
 
 def _normalize_string(s: str) -> str:
@@ -458,8 +467,17 @@ def _import_relations(
 
 # ── Stage 3: Finalize ────────────────────────────────────────────────────
 
-def _finalize_pids_and_labels(conn: sqlite3.Connection, spec_id: str) -> None:
-    """Auto-generate PIDs and labels for imported objects that lack them."""
+def _finalize_pids_and_labels(
+    conn: sqlite3.Connection,
+    spec_id: str,
+    id_map: Optional["IdMap"] = None,
+    rowid_to_reqif: Optional[Dict[int, str]] = None,
+) -> None:
+    """Auto-generate PIDs and labels for imported objects that lack them.
+
+    When *id_map* and *rowid_to_reqif* are provided, each object's PID is
+    registered as the stable id_map key (instead of the transient rowid).
+    """
     rows = conn.execute(
         "SELECT id, type_ref, pid, title_text FROM spec_objects "
         "WHERE specification_ref = ? ORDER BY type_ref, file_seq",
@@ -508,6 +526,12 @@ def _finalize_pids_and_labels(conn: sqlite3.Connection, spec_id: str) -> None:
             "pid_auto_generated = ?, label = ? WHERE id = ?",
             (pid, pid_prefix, pid_sequence, pid_auto, label, obj_id),
         )
+
+        # Register PID → ReqIF UUID mapping (stable across DB rebuilds).
+        if id_map is not None and rowid_to_reqif is not None:
+            reqif_uuid = rowid_to_reqif.get(obj_id)
+            if reqif_uuid and pid:
+                id_map.put("spec_objects", pid, reqif_uuid)
 
 
 # ── Public API ───────────────────────────────────────────────────────────
@@ -559,7 +583,7 @@ def import_reqif(
         conn, specifications, spec_type_map, id_map, spec_slug,
     )
 
-    obj_id_map = _import_objects_and_hierarchy(
+    obj_id_map, rowid_to_reqif = _import_objects_and_hierarchy(
         conn, bundle, specifications, spec_map,
         obj_type_map, attr_def_name_map, attr_def_prim_map, id_map,
     )
@@ -572,8 +596,19 @@ def import_reqif(
         specir_spec_id, id_map,
     )
 
-    # Stage 3 — finalize
-    _finalize_pids_and_labels(conn, specir_spec_id)
+    # Stage 3 — finalize PIDs and populate id_map with PID keys.
+    _finalize_pids_and_labels(
+        conn, specir_spec_id,
+        id_map=id_map, rowid_to_reqif=rowid_to_reqif,
+    )
+
+    # Fix target_text to store the target's PID (not the raw ReqIF UUID).
+    conn.execute(
+        "UPDATE spec_relations SET target_text = "
+        "(SELECT pid FROM spec_objects WHERE id = spec_relations.target_object_id) "
+        "WHERE specification_ref = ? AND target_object_id IS NOT NULL",
+        (specir_spec_id,),
+    )
 
     conn.commit()
     return specir_spec_id
