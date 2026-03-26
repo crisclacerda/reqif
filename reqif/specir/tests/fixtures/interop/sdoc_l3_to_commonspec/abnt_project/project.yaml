@@ -1,0 +1,24 @@
+# Generated from ReqIF import
+project:
+  code: STRICTDOC_LOW_LEVEL_REQUIREMENTS_SPECIFICATION_L3
+  name: StrictDoc Low-Level Requirements Specification (L3)
+
+template: imported
+
+output_dir: build/
+
+doc_files:
+  - strictdoc-low-level-requirements-specification-l3.md
+
+outputs:
+  - format: docx
+    path: build/docx/strictdoc-low-level-requirements-specification-l3.docx
+  - format: html5
+    path: build/www/strictdoc-low-level-requirements-specification-l3.html
+
+html5:
+  number_sections: true
+  table_of_contents: true
+  toc_depth: 3
+  standalone: true
+  embed_resources: true

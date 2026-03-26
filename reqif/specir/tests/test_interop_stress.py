@@ -60,6 +60,11 @@ _STRICTDOC_L2 = os.path.join(
     "strictdoc_21_l2_high_level_requirements.sdoc",
 )
 
+_STRICTDOC_L3 = os.path.join(
+    _STRICTDOC_DOCS_DIR,
+    "strictdoc_22_l3_low_level_requirements.sdoc",
+)
+
 _ENGINEERING_DB = os.path.normpath(
     os.path.join(
         os.path.dirname(__file__),
@@ -373,6 +378,349 @@ class TestSDocToCommonSpec(unittest.TestCase):
         h3 = sum(1 for l in self._md.split("\n") if l.startswith("### "))
         self.assertGreater(h2, 10, f"Expected > 10 H2 headings, got {h2}")
         self.assertGreater(h3, 50, f"Expected > 50 H3 headings, got {h3}")
+
+
+# =========================================================================
+# Stress Test 1b: Real StrictDoc L3 .sdoc -> ReqIF -> SpecIR -> CommonSpec
+# =========================================================================
+
+@unittest.skipUnless(_HAVE_STRICTDOC, "strictdoc not installed")
+@unittest.skipUnless(os.path.exists(_STRICTDOC_L3), "strictdoc L3 .sdoc not found")
+class TestSDocL3ToCommonSpec(unittest.TestCase):
+    """Full pipeline: real StrictDoc L3 .sdoc -> ReqIF -> SpecIR -> CommonSpec -> specc build.
+
+    Uses StrictDoc's own low-level requirements specification (21 UIDs,
+    2 sections, multiline statements with code blocks, RATIONALE/COMMENT
+    fields, external parent relations to L2/L1 UIDs).
+
+    Artifacts persisted to fixtures/interop/sdoc_l3_to_commonspec/.
+    """
+
+    @classmethod
+    def setUpClass(cls):
+        # Ensure pandoc is available for content conversion.
+        if not os.environ.get("SPECCOMPILER_HOME"):
+            sc_home = os.path.normpath(os.path.join(
+                os.path.dirname(__file__),
+                "..", "..", "..", "..", "..", "..", "SpecCompiler",
+            ))
+            if os.path.isdir(os.path.join(sc_home, "dist", "bin")):
+                os.environ["SPECCOMPILER_HOME"] = sc_home
+                # Force re-resolve of pandoc path.
+                from reqif.specir import content_converter as _cc
+                _cc._pandoc_resolved = False
+
+        base = os.path.join(_FIXTURES_DIR, "sdoc_l3_to_commonspec")
+
+        # Phase A: Prepare .sdoc with ALL external refs stripped.
+        # L3 references SDOC-SRS-* (L2) and SDOC-SSS-* (L1) — both external.
+        with open(_STRICTDOC_L3, encoding="utf-8") as f:
+            raw = f.read()
+        cleaned = _strip_external_refs(raw)
+        # Also strip SDOC-SRS-* refs (internal to L2, external to L3).
+        cleaned = re.sub(
+            r"^- TYPE: Parent\n  VALUE: SDOC-SRS-\S+\n",
+            "",
+            cleaned,
+            flags=re.MULTILINE,
+        )
+        # Remove orphaned RELATIONS: lines (no entries left after stripping).
+        cleaned = re.sub(
+            r"^RELATIONS:\n(?=\n|\[|$)",
+            "",
+            cleaned,
+            flags=re.MULTILINE,
+        )
+
+        sdoc_dir = os.path.join(base, "input")
+        _clean_dir(sdoc_dir)
+        toml_src = os.path.join(_STRICTDOC_DOCS_DIR, "strictdoc.toml")
+        if os.path.exists(toml_src):
+            shutil.copy2(toml_src, os.path.join(sdoc_dir, "strictdoc.toml"))
+        sdoc_path = os.path.join(
+            sdoc_dir, "strictdoc_22_l3_low_level_requirements.sdoc"
+        )
+        with open(sdoc_path, "w", encoding="utf-8") as f:
+            f.write(cleaned)
+
+        cls._sdoc_uid_count = len(
+            re.findall(r"^UID: (.+)$", cleaned, re.MULTILINE)
+        )
+        cls._sdoc_section_count = len(
+            re.findall(r"^\[\[SECTION\]\]$", cleaned, re.MULTILINE)
+        )
+
+        # Phase B: Export to ReqIF via strictdoc.
+        export_dir = os.path.join(base, "strictdoc_export")
+        _clean_dir(export_dir)
+        rc, stdout, stderr = _strictdoc_export(sdoc_dir, export_dir)
+        assert rc == 0, f"strictdoc export failed (rc={rc}):\n{stdout}{stderr}"
+
+        src_reqif = _find_reqif_file(export_dir)
+        assert src_reqif is not None, f"No .reqif file in {export_dir}"
+        reqif_dir = os.path.join(base, "reqif")
+        _clean_dir(reqif_dir)
+        cls._reqif_path = os.path.join(reqif_dir, "sdoc_l3.reqif")
+        shutil.copy2(src_reqif, cls._reqif_path)
+        shutil.rmtree(export_dir)
+
+        # Phase C: Parse ReqIF -> import into SpecIR.
+        bundle = ReqIFParser.parse(cls._reqif_path)
+        cls._conn = sqlite3.connect(":memory:")
+        cls._spec_id = import_reqif(bundle, cls._conn)
+        cls._conn.row_factory = sqlite3.Row
+
+        cls._obj_count = cls._conn.execute(
+            "SELECT COUNT(*) FROM spec_objects WHERE specification_ref = ?",
+            (cls._spec_id,),
+        ).fetchone()[0]
+        cls._rel_count = cls._conn.execute(
+            "SELECT COUNT(*) FROM spec_relations WHERE specification_ref = ?",
+            (cls._spec_id,),
+        ).fetchone()[0]
+
+        # Phase D: Decompile to CommonSpec.
+        decomp_dir = os.path.join(base, "commonspec")
+        _clean_dir(decomp_dir)
+        cls._md_files = decompile(
+            cls._conn, cls._spec_id, decomp_dir, overwrite=True,
+        )
+        cls._md_dict = _read_all_md(decomp_dir)
+        cls._md = "\n".join(cls._md_dict.values())
+
+        # Phase E: Build ABNT document via specc.
+        from reqif.specir.model_generator import generate_model
+        from reqif.specir.project_generator import generate_project
+
+        proj_dir = os.path.join(base, "abnt_project")
+        _clean_dir(proj_dir)
+
+        # Decompile into project directory.
+        proj_md_files = decompile(
+            cls._conn, cls._spec_id, proj_dir, overwrite=True,
+        )
+        proj_doc_files = [os.path.relpath(f, proj_dir) for f in proj_md_files]
+
+        # Create composite model: ABNT types + imported types.
+        # Use a name not in SPECCOMPILER_HOME so CWD resolution kicks in.
+        model_name = "sdoc_l3"
+        abnt_src = os.path.normpath(os.path.join(
+            os.path.dirname(__file__),
+            "..", "..", "..", "..", "..", "..", "specc-abnt",
+        ))
+        cls._has_abnt = os.path.isdir(abnt_src)
+        if cls._has_abnt:
+            model_dir = os.path.join(proj_dir, "models", model_name)
+            os.makedirs(os.path.join(model_dir, "types", "objects"), exist_ok=True)
+            os.makedirs(os.path.join(model_dir, "types", "specifications"), exist_ok=True)
+            os.makedirs(os.path.join(model_dir, "types", "relations"), exist_ok=True)
+            for lua_file in glob.glob(os.path.join(abnt_src, "types", "objects", "*.lua")):
+                shutil.copy2(lua_file, os.path.join(model_dir, "types", "objects"))
+            for lua_file in glob.glob(os.path.join(abnt_src, "types", "specifications", "*.lua")):
+                shutil.copy2(lua_file, os.path.join(model_dir, "types", "specifications"))
+            for sub in ("postprocessors", "styles", "html", "filters"):
+                src = os.path.join(abnt_src, sub)
+                if os.path.isdir(src):
+                    os.symlink(src, os.path.join(model_dir, sub))
+        else:
+            model_name = "imported"
+
+        generate_model(cls._conn, proj_dir, model_name=model_name)
+        generate_project(
+            cls._conn, cls._spec_id, proj_dir,
+            model_name=model_name, doc_files=proj_doc_files, overwrite=True,
+        )
+
+        # Run specc build.
+        cls._specc_rc = -1
+        cls._specc_docx = None
+        cls._specc_html = None
+        try:
+            env = os.environ.copy()
+            env.setdefault("LUA_PATH", "")
+            env["LUA_PATH"] = f"./?.lua;./?/init.lua;{env['LUA_PATH']}"
+            r = subprocess.run(
+                ["specc", "build", "project.yaml"],
+                capture_output=True, text=True, timeout=60,
+                cwd=proj_dir, env=env,
+            )
+            cls._specc_rc = r.returncode
+            cls._specc_stderr = r.stderr
+        except (FileNotFoundError, subprocess.TimeoutExpired):
+            cls._specc_stderr = "specc not available"
+
+        for ext, attr in [("*.docx", "_specc_docx"), ("*.html", "_specc_html")]:
+            hits = glob.glob(os.path.join(proj_dir, "build", "**", ext), recursive=True)
+            if hits:
+                setattr(cls, attr, hits[0])
+
+        built_db = os.path.join(proj_dir, "build", "specir.db")
+        cls._built_db_path = built_db if os.path.exists(built_db) else None
+
+    @classmethod
+    def tearDownClass(cls):
+        cls._conn.close()
+
+    # ── Structure tests ──────────────────────────────────────────────────
+
+    def test_reqif_produced(self):
+        """Exported ReqIF should exist and be non-trivial."""
+        size = os.path.getsize(self._reqif_path)
+        self.assertGreater(size, 10_000, f"ReqIF only {size} bytes")
+
+    def test_object_count(self):
+        """SpecIR should contain at least as many objects as UIDs in the source."""
+        self.assertGreaterEqual(
+            self._obj_count, self._sdoc_uid_count,
+            f"Expected >= {self._sdoc_uid_count} objects (UID count), "
+            f"got {self._obj_count}",
+        )
+
+    def test_commonspec_files_produced(self):
+        """Decompile should produce at least one CommonSpec file."""
+        self.assertGreater(len(self._md_files), 0)
+
+    def test_commonspec_single_or_few_files(self):
+        """L3 has ~23 objects — should produce a single-file or few-file spec."""
+        self.assertLessEqual(
+            len(self._md_files), 5,
+            f"Expected <= 5 files for {self._obj_count} objects, "
+            f"got {len(self._md_files)}",
+        )
+
+    # ── PID preservation ─────────────────────────────────────────────────
+
+    def test_sdoc_uids_in_commonspec(self):
+        """All SDOC-LLR-* UIDs should appear as @PID in CommonSpec headings."""
+        pid_matches = re.findall(r"@SDOC-LLR-\d+", self._md)
+        self.assertGreaterEqual(
+            len(pid_matches), self._sdoc_uid_count,
+            f"Expected >= {self._sdoc_uid_count} SDOC-LLR PIDs, "
+            f"got {len(pid_matches)}",
+        )
+
+    # ── Content fidelity ─────────────────────────────────────────────────
+
+    def test_no_literal_backslash_n(self):
+        r"""Multiline content must not have literal \\n escape sequences."""
+        for name, content in self._md_dict.items():
+            self.assertNotIn(
+                "\\n", content,
+                f"Literal \\n found in {name}",
+            )
+
+    def test_requirement_titles_present(self):
+        """Key requirement titles from the L3 spec should survive."""
+        for title in (
+            "Read Markdown markup",
+            "Three conventions for meta fields",
+            "Cross-linking PDF documents",
+        ):
+            self.assertIn(title, self._md, f"Title '{title}' not found")
+
+    def test_multiline_statement_bodies_present(self):
+        """STATEMENT bodies should be rendered as markdown content paragraphs."""
+        # SDOC-LLR-183 has a simple one-liner body
+        self.assertIn(
+            "reading Markdown files into in-memory SDoc documents", self._md,
+        )
+        # SDOC-LLR-184 has a large multiline body with code examples
+        self.assertIn("meta-information stored in bullet point", self._md)
+
+    def test_rationale_fields_present(self):
+        """RATIONALE fields should appear as attributes in CommonSpec."""
+        attr_lines = [l for l in self._md.split("\n") if l.startswith("> ")]
+        rationale_lines = [l for l in attr_lines if "RATIONALE" in l.upper()]
+        self.assertGreater(
+            len(rationale_lines), 0,
+            "No RATIONALE attributes found in CommonSpec",
+        )
+
+    def test_comment_field_present(self):
+        """SDOC-LLR-205 has a COMMENT field — should survive as attribute."""
+        self.assertIn(
+            "PDF cross-document linking", self._md,
+            "COMMENT content from SDOC-LLR-205 not found",
+        )
+
+    def test_status_attributes_present(self):
+        """Most L3 requirements have STATUS: Active — should appear in CommonSpec."""
+        attr_lines = [l for l in self._md.split("\n") if l.startswith("> ")]
+        status_lines = [l for l in attr_lines if l.startswith("> STATUS:")]
+        self.assertGreater(
+            len(status_lines), 10,
+            f"Expected > 10 STATUS attrs, got {len(status_lines)}",
+        )
+
+    def test_section_structure(self):
+        """Output should have H2 headings for the 2 sections."""
+        h2 = sum(1 for l in self._md.split("\n") if l.startswith("## "))
+        self.assertGreaterEqual(h2, 2, f"Expected >= 2 H2 headings, got {h2}")
+
+    def test_h3_for_requirements(self):
+        """Requirements within sections should become H3 headings."""
+        h3 = sum(1 for l in self._md.split("\n") if l.startswith("### "))
+        self.assertGreater(h3, 10, f"Expected > 10 H3 headings, got {h3}")
+
+    def test_body_paragraphs_not_empty(self):
+        """Most requirements have STATEMENT bodies — they should appear as
+        plain paragraphs between the heading/attributes and the next heading."""
+        lines = self._md.split("\n")
+        body_lines = [
+            l for l in lines
+            if l.strip()
+            and not l.startswith("#")
+            and not l.startswith("> ")
+            and not l.startswith("```")
+        ]
+        # 21 requirements each with at least a one-liner → expect many body lines
+        self.assertGreater(
+            len(body_lines), 10,
+            f"Expected > 10 body lines, got {len(body_lines)} "
+            "(pandoc may not be available)",
+        )
+
+    # ── specc build (ABNT model) ─────────────────────────────────────────
+
+    def test_specc_build_succeeds(self):
+        """specc build should exit 0 with no errors."""
+        self.assertEqual(
+            self._specc_rc, 0,
+            f"specc build failed (rc={self._specc_rc}):\n{self._specc_stderr}",
+        )
+
+    def test_specc_docx_produced(self):
+        """specc should produce a DOCX file."""
+        self.assertIsNotNone(self._specc_docx, "No .docx file produced")
+        size = os.path.getsize(self._specc_docx)
+        self.assertGreater(size, 5_000, f"DOCX only {size} bytes")
+
+    def test_specc_html_produced(self):
+        """specc should produce an HTML file."""
+        self.assertIsNotNone(self._specc_html, "No .html file produced")
+        size = os.path.getsize(self._specc_html)
+        self.assertGreater(size, 5_000, f"HTML only {size} bytes")
+
+    def test_specc_built_db_object_count(self):
+        """Built SpecIR DB should have all 24 objects (21 req + 2 section + 1 text)."""
+        self.assertIsNotNone(self._built_db_path, "No specir.db produced")
+        conn = sqlite3.connect(self._built_db_path)
+        count = conn.execute("SELECT COUNT(*) FROM spec_objects").fetchone()[0]
+        conn.close()
+        self.assertGreaterEqual(count, self._sdoc_uid_count)
+
+    def test_specc_built_db_types_recognized(self):
+        """Built DB should have REQUIREMENT type, not fallback SECTION."""
+        self.assertIsNotNone(self._built_db_path, "No specir.db produced")
+        conn = sqlite3.connect(self._built_db_path)
+        req_count = conn.execute(
+            "SELECT COUNT(*) FROM spec_objects WHERE type_ref = 'REQUIREMENT'"
+        ).fetchone()[0]
+        conn.close()
+        self.assertEqual(
+            req_count, self._sdoc_uid_count,
+            f"Expected {self._sdoc_uid_count} REQUIREMENT objects, got {req_count}",
+        )
 
 
 # =========================================================================

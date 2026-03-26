@@ -324,13 +324,33 @@ def ast_to_markdown(ast_json: str, *, strip_headers: bool = True) -> Optional[st
     return _post_clean(raw) or None
 
 
+def _detect_input_format(text: str) -> str:
+    """Detect whether *text* is HTML or plain/RST text.
+
+    StrictDoc exports ReqIF content as plain text (often with RST directives)
+    stored in STRING attributes, not XHTML.  If the content has no HTML tags
+    we should tell Pandoc to read it as RST rather than HTML, otherwise the
+    structure (code blocks, lists, paragraphs) is lost.
+    """
+    stripped = text.strip()
+    # Quick check: does it look like it has any HTML tags?
+    if re.search(r"<\s*[a-zA-Z][^>]*>", stripped):
+        return "html"
+    # Contains RST directives?
+    if re.search(r"^\.\.\s+\w+", stripped, re.MULTILINE):
+        return "rst"
+    # Plain text with paragraph breaks — still better as RST than HTML.
+    return "rst"
+
+
 def html_to_markdown(html: str) -> Optional[str]:
-    """Convert an HTML fragment to Markdown via Pandoc.
+    """Convert an HTML or plain-text fragment to Markdown via Pandoc.
 
     Parameters
     ----------
     html : str
-        HTML5 fragment (as stored in ``content_xhtml`` or ``xhtml_value``).
+        HTML5 fragment, RST text, or plain text (as stored in
+        ``content_xhtml`` or ``xhtml_value``).
 
     Returns
     -------
@@ -339,7 +359,8 @@ def html_to_markdown(html: str) -> Optional[str]:
     """
     if not html or not html.strip():
         return None
-    raw = _run_pandoc(html, "html")
+    fmt = _detect_input_format(html)
+    raw = _run_pandoc(html, fmt)
     if raw is None:
         return None
     return _post_clean(raw) or None

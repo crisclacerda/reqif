@@ -1,0 +1,1527 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang xml:lang>
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>strictdoc-low-level-requirements-specification-l3_html5</title>
+  <style>
+html {
+color: #1a1a1a;
+background-color: #fdfdfd;
+}
+body {
+margin: 0 auto;
+max-width: 36em;
+padding-left: 50px;
+padding-right: 50px;
+padding-top: 50px;
+padding-bottom: 50px;
+hyphens: auto;
+overflow-wrap: break-word;
+text-rendering: optimizeLegibility;
+font-kerning: normal;
+}
+@media (max-width: 600px) {
+body {
+font-size: 0.9em;
+padding: 12px;
+}
+h1 {
+font-size: 1.8em;
+}
+}
+@media print {
+html {
+background-color: white;
+}
+body {
+background-color: transparent;
+color: black;
+font-size: 12pt;
+}
+p, h2, h3 {
+orphans: 3;
+widows: 3;
+}
+h2, h3, h4 {
+page-break-after: avoid;
+}
+}
+p {
+margin: 1em 0;
+}
+a {
+color: #1a1a1a;
+}
+a:visited {
+color: #1a1a1a;
+}
+img {
+max-width: 100%;
+}
+svg {
+height: auto;
+max-width: 100%;
+}
+h1, h2, h3, h4, h5, h6 {
+margin-top: 1.4em;
+}
+h5, h6 {
+font-size: 1em;
+font-style: italic;
+}
+h6 {
+font-weight: normal;
+}
+ol, ul {
+padding-left: 1.7em;
+margin-top: 1em;
+}
+li > ol, li > ul {
+margin-top: 0;
+}
+blockquote {
+margin: 1em 0 1em 1.7em;
+padding-left: 1em;
+border-left: 2px solid #e6e6e6;
+color: #606060;
+}
+code {
+font-family: Menlo, Monaco, Consolas, 'Lucida Console', monospace;
+font-size: 85%;
+margin: 0;
+hyphens: manual;
+}
+pre {
+margin: 1em 0;
+overflow: auto;
+}
+pre code {
+padding: 0;
+overflow: visible;
+overflow-wrap: normal;
+}
+.sourceCode {
+background-color: transparent;
+overflow: visible;
+}
+hr {
+background-color: #1a1a1a;
+border: none;
+height: 1px;
+margin: 1em 0;
+}
+table {
+margin: 1em 0;
+border-collapse: collapse;
+width: 100%;
+overflow-x: auto;
+display: block;
+font-variant-numeric: lining-nums tabular-nums;
+}
+table caption {
+margin-bottom: 0.75em;
+}
+tbody {
+margin-top: 0.5em;
+border-top: 1px solid #1a1a1a;
+border-bottom: 1px solid #1a1a1a;
+}
+th {
+border-top: 1px solid #1a1a1a;
+padding: 0.25em 0.5em 0.25em 0.5em;
+}
+td {
+padding: 0.125em 0.5em 0.25em 0.5em;
+}
+header {
+margin-bottom: 4em;
+text-align: center;
+}
+#TOC li {
+list-style: none;
+}
+#TOC ul {
+padding-left: 1.3em;
+}
+#TOC > ul {
+padding-left: 0;
+}
+#TOC a:not(:hover) {
+text-decoration: none;
+}
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+
+ul.task-list[class]{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+font-size: inherit;
+width: 0.8em;
+margin: 0 0.8em 0.2em -1.6em;
+vertical-align: middle;
+}
+.display.math{display: block; text-align: center; margin: 0.5rem auto;}
+
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+</head>
+<body>
+<nav id="TOC" role="doc-toc">
+<ul>
+<li><a href="#TEXT-001" id="toc-TEXT-001"><span class="toc-section-number">1</span> TEXT:
+TEXT-70267357-01e6-4bec-8563-2b862be4f849</a></li>
+<li><a href="#SEC-001" id="toc-SEC-001"><span class="toc-section-number">2</span> Markdown text markup</a>
+<ul>
+<li><a href="#SDOC-LLR-183" id="toc-SDOC-LLR-183"><span class="toc-section-number">2.1</span> REQUIREMENT: Read Markdown
+markup</a></li>
+<li><a href="#SDOC-LLR-197" id="toc-SDOC-LLR-197"><span class="toc-section-number">2.2</span> REQUIREMENT: Write Markdown
+markup</a></li>
+<li><a href="#SDOC-LLR-192" id="toc-SDOC-LLR-192"><span class="toc-section-number">2.3</span> REQUIREMENT: Markdown files
+discovery</a></li>
+<li><a href="#SDOC-LLR-196" id="toc-SDOC-LLR-196"><span class="toc-section-number">2.4</span> REQUIREMENT: Identical Markdown
+content by import/export roundtrip</a></li>
+<li><a href="#SDOC-LLR-191" id="toc-SDOC-LLR-191"><span class="toc-section-number">2.5</span> REQUIREMENT: Markdown
+formats</a></li>
+<li><a href="#SDOC-LLR-186" id="toc-SDOC-LLR-186"><span class="toc-section-number">2.6</span> REQUIREMENT: Meta fields vs
+content fields</a></li>
+<li><a href="#SDOC-LLR-189" id="toc-SDOC-LLR-189"><span class="toc-section-number">2.7</span> REQUIREMENT: One Markdown file
+\u2014 One SDoc document</a></li>
+<li><a href="#SDOC-LLR-195" id="toc-SDOC-LLR-195"><span class="toc-section-number">2.8</span> REQUIREMENT: Strict ban for
+redundant empty lines</a></li>
+<li><a href="#SDOC-LLR-194" id="toc-SDOC-LLR-194"><span class="toc-section-number">2.9</span> REQUIREMENT: Syntax for meta and
+content field names</a></li>
+<li><a href="#SDOC-LLR-184" id="toc-SDOC-LLR-184"><span class="toc-section-number">2.10</span> REQUIREMENT: Three conventions
+for meta fields</a></li>
+<li><a href="#SDOC-LLR-185" id="toc-SDOC-LLR-185"><span class="toc-section-number">2.11</span> REQUIREMENT: Valid formats for
+multi-line fields</a></li>
+<li><a href="#SDOC-LLR-202" id="toc-SDOC-LLR-202"><span class="toc-section-number">2.12</span> REQUIREMENT: Support node parent
+relations</a></li>
+<li><a href="#SDOC-LLR-193" id="toc-SDOC-LLR-193"><span class="toc-section-number">2.13</span> REQUIREMENT: Valid SDoc node
+criteria</a></li>
+<li><a href="#SDOC-LLR-200" id="toc-SDOC-LLR-200"><span class="toc-section-number">2.14</span> REQUIREMENT: Valid SDoc document
+root node</a></li>
+<li><a href="#SDOC-LLR-190" id="toc-SDOC-LLR-190"><span class="toc-section-number">2.15</span> REQUIREMENT: Reading rules \u2014
+Default grammar for MVP</a></li>
+<li><a href="#SDOC-LLR-199" id="toc-SDOC-LLR-199"><span class="toc-section-number">2.16</span> REQUIREMENT: Reading rules \u2014
+Node hierarchy</a></li>
+<li><a href="#SDOC-LLR-198" id="toc-SDOC-LLR-198"><span class="toc-section-number">2.17</span> REQUIREMENT: Writing rules \u2014
+Default grammar for MVP</a></li>
+<li><a href="#SDOC-LLR-187" id="toc-SDOC-LLR-187"><span class="toc-section-number">2.18</span> REQUIREMENT: Robust Markdown
+backend</a></li>
+</ul></li>
+<li><a href="#SEC-002" id="toc-SEC-002"><span class="toc-section-number">3</span> HTML2PDF export</a>
+<ul>
+<li><a href="#SDOC-LLR-203" id="toc-SDOC-LLR-203"><span class="toc-section-number">3.1</span> REQUIREMENT: Use of
+html2pdf4doc</a></li>
+<li><a href="#SDOC-LLR-204" id="toc-SDOC-LLR-204"><span class="toc-section-number">3.2</span> REQUIREMENT: Use of PyPDF for PDF
+postprocessing</a></li>
+<li><a href="#SDOC-LLR-205" id="toc-SDOC-LLR-205"><span class="toc-section-number">3.3</span> REQUIREMENT: Cross-linking PDF
+documents from one project tree</a></li>
+</ul></li>
+<li><a href="#SEC-003" id="toc-SEC-003"><span class="toc-section-number">4</span> Source code parsing</a>
+<ul>
+<li><a href="#SDOC_SPECIFICATION_TYPE_SINGLETON-sec1.1" id="toc-SDOC_SPECIFICATION_TYPE_SINGLETON-sec1.1"><span class="toc-section-number">4.1</span> Rust @SEC-003.001</a>
+<ul>
+<li><a href="#SDOC-LLR-164" id="toc-SDOC-LLR-164"><span class="toc-section-number">4.1.1</span> REQUIREMENT: Auto-scoped
+relation markers in Rust docs</a></li>
+<li><a href="#SDOC-LLR-165" id="toc-SDOC-LLR-165"><span class="toc-section-number">4.1.2</span> REQUIREMENT: Inner doc
+attributes</a></li>
+<li><a href="#SDOC-LLR-166" id="toc-SDOC-LLR-166"><span class="toc-section-number">4.1.3</span> REQUIREMENT: Inner line
+docs</a></li>
+<li><a href="#SDOC-LLR-167" id="toc-SDOC-LLR-167"><span class="toc-section-number">4.1.4</span> REQUIREMENT: Inner block
+docs</a></li>
+<li><a href="#SDOC-LLR-168" id="toc-SDOC-LLR-168"><span class="toc-section-number">4.1.5</span> REQUIREMENT: Outer doc
+attributes</a></li>
+<li><a href="#SDOC-LLR-169" id="toc-SDOC-LLR-169"><span class="toc-section-number">4.1.6</span> REQUIREMENT: Outer line
+docs</a></li>
+<li><a href="#SDOC-LLR-170" id="toc-SDOC-LLR-170"><span class="toc-section-number">4.1.7</span> REQUIREMENT: Outer block
+docs</a></li>
+<li><a href="#SDOC-LLR-171" id="toc-SDOC-LLR-171"><span class="toc-section-number">4.1.8</span> REQUIREMENT: File, line and
+range markers</a></li>
+<li><a href="#SDOC-LLR-172" id="toc-SDOC-LLR-172"><span class="toc-section-number">4.1.9</span> REQUIREMENT: Source nodes from
+doc comments</a></li>
+<li><a href="#SDOC-LLR-173" id="toc-SDOC-LLR-173"><span class="toc-section-number">4.1.10</span> REQUIREMENT: Forward relations
+to Rust items</a></li>
+<li><a href="#SDOC-LLR-174" id="toc-SDOC-LLR-174"><span class="toc-section-number">4.1.11</span> REQUIREMENT: Forward relation
+by canonical path</a></li>
+<li><a href="#SDOC-LLR-175" id="toc-SDOC-LLR-175"><span class="toc-section-number">4.1.12</span> REQUIREMENT: Collapse doc
+comments</a></li>
+<li><a href="#SDOC-LLR-176" id="toc-SDOC-LLR-176"><span class="toc-section-number">4.1.13</span> REQUIREMENT: Rust marker
+descriptions</a></li>
+<li><a href="#SDOC-LLR-177" id="toc-SDOC-LLR-177"><span class="toc-section-number">4.1.14</span> REQUIREMENT: Valid positions of
+doc comments</a></li>
+<li><a href="#SDOC-LLR-178" id="toc-SDOC-LLR-178"><span class="toc-section-number">4.1.15</span> REQUIREMENT: Inner doc comments
+for functions</a></li>
+<li><a href="#SDOC-LLR-179" id="toc-SDOC-LLR-179"><span class="toc-section-number">4.1.16</span> REQUIREMENT: Inner doc comments
+for modules</a></li>
+<li><a href="#SDOC-LLR-180" id="toc-SDOC-LLR-180"><span class="toc-section-number">4.1.17</span> REQUIREMENT: Inner doc comments
+for external blocks</a></li>
+<li><a href="#SDOC-LLR-181" id="toc-SDOC-LLR-181"><span class="toc-section-number">4.1.18</span> REQUIREMENT: Inner doc comments
+for implementation blocks</a></li>
+<li><a href="#SDOC-LLR-182" id="toc-SDOC-LLR-182"><span class="toc-section-number">4.1.19</span> REQUIREMENT: Allowed position
+for outer docs</a></li>
+</ul></li>
+</ul></li>
+</ul>
+</nav>
+<div id="SDOC_SPECIFICATION_TYPE_SINGLETON" class="spec-title" data-custom-style="Title">
+<p>StrictDoc Low-Level Requirements Specification (L3)</p>
+</div>
+<h1 data-number="1" data-pos="3:1-4:1" id="TEXT-001"><span class="header-section-number">1</span> TEXT:
+TEXT-70267357-01e6-4bec-8563-2b862be4f849</h1>
+<div data-pos="5:1-6:1">
+<p>The level 3 low-level requirements specification of StrictDoc
+(L3/LLR) is derived from StrictDoc&#39;s L2 high-level (L2/HLR) requirements
+specification. The purpose of L3/LLR is to provide the lowest-level
+requirements from which StrictDoc&#39;s source code can be directly
+implemented without further information.</p>
+</div>
+<div data-pos="7:1-8:1">
+<p>It is at the L3 level that the StrictDoc requirements are specified
+for the actual software implementers, including both the StrictDoc
+developers and AI agents such as Codex. At the same time, the L2/HLR
+requirements provide the framework for the WHAT and WHY of the
+implementation instructions that are specified by this L3/LLR.</p>
+</div>
+<div data-pos="9:1-10:1">
+<p>NOTE: This specification level is under construction. Many L2/HLR
+requirements will be gradually moved to be here at the L3/HLR level.</p>
+</div>
+<h1 data-number="2" data-pos="11:1-12:1" id="SEC-001"><span class="header-section-number">2</span> Markdown text markup</h1>
+<h2 data-number="2.1" data-pos="13:1-14:1" id="SDOC-LLR-183"><span class="header-section-number">2.1</span> REQUIREMENT: Read Markdown
+markup</h2>
+<div data-pos="15:1-16:1">
+<blockquote>
+<div data-pos="15:3-16:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="17:1-18:1">
+<p>StrictDoc shall support reading Markdown files into in-memory SDoc
+documents.</p>
+</div>
+<h2 data-number="2.2" data-pos="19:1-20:1" id="SDOC-LLR-197"><span class="header-section-number">2.2</span> REQUIREMENT: Write Markdown
+markup</h2>
+<div data-pos="21:1-22:1">
+<blockquote>
+<div data-pos="21:3-22:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="23:1-24:1">
+<p>StrictDoc shall support writing in-memory SDoc documents to Markdown
+files.</p>
+</div>
+<h2 data-number="2.3" data-pos="25:1-26:1" id="SDOC-LLR-192"><span class="header-section-number">2.3</span> REQUIREMENT: Markdown files
+discovery</h2>
+<div data-pos="27:1-28:1">
+<blockquote>
+<div data-pos="27:3-28:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="29:1-30:1">
+<p>StrictDoc shall discover Markdown files <code data-pos="29:41-29:47">*.md</code> and <code data-pos="29:52-29:64">*.markdown</code> using the same mechanism as
+used for SDoc files.</p>
+</div>
+<h2 data-number="2.4" data-pos="31:1-32:1" id="SDOC-LLR-196"><span class="header-section-number">2.4</span> REQUIREMENT: Identical Markdown
+content by import/export roundtrip</h2>
+<div data-pos="33:1-34:1">
+<blockquote>
+<div data-pos="33:3-34:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="35:1-36:1">
+<blockquote>
+<div data-pos="35:3-36:1">
+<p>RATIONALE: A consistent import/export roundtrip implementation and
+testing reduces the risk of the Markdown bi-directional import/export
+corruption.</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="37:1-38:1">
+<p>StrictDoc shall ensure that identical Markdown content is produced
+every time StrictDoc reads a Markdown file and then writes it to another
+Markdown file.</p>
+</div>
+<div data-pos="39:1-40:1">
+<p>The following aspects shall additionally apply:</p>
+</div>
+<div data-pos="41:1-45:1">
+<ul>
+<li><div data-pos="41:5-42:1">
+For MVP, line-endings should support both LF (Linux/macOS-style) and
+CRLF (Windows-style).
+</div></li>
+<li><div data-pos="42:5-43:1">
+The <code data-pos="42:9-42:36">export --formats=markdown</code> shall
+work for any format readable by StrictDoc, including Markdown itself,
+SDoc, RDF (future growth), ReqIF, etc.
+</div></li>
+</ul>
+</div>
+<div data-pos="44:1-45:1">
+<p>NOTE: The write-back to Markdown file must happen through proper AST
+serialization, not just by giving back the original read Markdown
+source.</p>
+</div>
+<div data-pos="46:1-47:1">
+<p>Exceptions:</p>
+</div>
+<div data-pos="48:1-49:1">
+<p>Edge cases related to handling non-default input formats are
+postponed after the Markdown MVP is implemented. For example:</p>
+</div>
+<div data-pos="50:1-53:1">
+<ul>
+<li><div data-pos="50:5-51:1">
+Markdown reader encounters content format #3 (implicit field) via [LINK:
+SDOC-LLR-185], but writer always emits #1/#2 for content via [LINK:
+SDOC-LLR-198]. In this case the content will not be identical, but it is
+accepted for an MVP implementation.
+</div></li>
+</ul>
+</div>
+<h2 data-number="2.5" data-pos="52:1-53:1" id="SDOC-LLR-191"><span class="header-section-number">2.5</span> REQUIREMENT: Markdown
+formats</h2>
+<div data-pos="54:1-55:1">
+<blockquote>
+<div data-pos="54:3-55:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="56:1-57:1">
+<blockquote>
+<div data-pos="56:3-57:1">
+<p>RATIONALE: CommonMark core is the most portable target across
+parsers.</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="58:1-59:1">
+<p>StrictDoc shall rely only on CommonMark core syntax v0.31.2 for SDoc
+node recognition.</p>
+</div>
+<h2 data-number="2.6" data-pos="60:1-61:1" id="SDOC-LLR-186"><span class="header-section-number">2.6</span> REQUIREMENT: Meta fields vs
+content fields</h2>
+<div data-pos="62:1-63:1">
+<blockquote>
+<div data-pos="62:3-63:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="64:1-65:1">
+<p>StrictDoc shall recognize the following Markdown nodes as SDoc
+nodes:</p>
+</div>
+<div class="sourceCode" id="cb1" data-pos="66:1-78:1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="fu">### Node title</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a>(empty line)</span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a>**Meta field name 1**:</span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a>**Meta field name 2**:</span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a>...</span>
+<span id="cb1-6"><a href="#cb1-6" aria-hidden="true" tabindex="-1"></a>(empty line)</span>
+<span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a>**Note content field 1**: ...</span>
+<span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a>(empty line)</span>
+<span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>**Note content field 2**: ...</span>
+<span id="cb1-10"><a href="#cb1-10" aria-hidden="true" tabindex="-1"></a>...</span></code></pre></div>
+<div data-pos="79:1-80:1">
+<p>An SDoc node terminates when another Markdown section header or an
+EOF is encountered.</p>
+</div>
+<div data-pos="81:1-82:1">
+<p>NOTE: There are no limitations to node level. A Markdown node can be
+at level 2, 3, etc. The level 1 is served for a root document node
+(document title with optional fields).</p>
+</div>
+<h2 data-number="2.7" data-pos="83:1-84:1" id="SDOC-LLR-189"><span class="header-section-number">2.7</span> REQUIREMENT: One Markdown file
+\u2014 One SDoc document</h2>
+<div data-pos="85:1-86:1">
+<blockquote>
+<div data-pos="85:3-86:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="87:1-88:1">
+<p>StrictDoc shall parse Markdown files using the &quot;one Markdown file
+u2014 one SDoc document&quot; principle.</p>
+</div>
+<h2 data-number="2.8" data-pos="89:1-90:1" id="SDOC-LLR-195"><span class="header-section-number">2.8</span> REQUIREMENT: Strict ban for
+redundant empty lines</h2>
+<div data-pos="91:1-92:1">
+<blockquote>
+<div data-pos="91:3-92:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="93:1-94:1">
+<p>When a parsing Markdown file, if StrictDoc encounters two or more
+consecutive empty lines and the lines are not within a Markdown code
+block or a Markdown blockquote block, StrictDoc shall raise a
+StrictDocSemanticError.</p>
+</div>
+<div data-pos="95:1-96:1">
+<p>NOTE: Empty lines includes whitespace-only lines which StrictDoc
+shall ban as well.</p>
+</div>
+<h2 data-number="2.9" data-pos="97:1-98:1" id="SDOC-LLR-194"><span class="header-section-number">2.9</span> REQUIREMENT: Syntax for meta
+and content field names</h2>
+<div data-pos="99:1-100:1">
+<blockquote>
+<div data-pos="99:3-100:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="101:1-102:1">
+<p>StrictDoc shall recognize the meta and content field names according
+to the following rules:</p>
+</div>
+<div data-pos="103:1-107:1">
+<ul>
+<li><div data-pos="103:5-104:1">
+Format is: <code data-pos="103:16-103:33">**Field name**:</code>.
+</div></li>
+<li><div data-pos="104:5-105:1">
+Alphanumeric character range, separated by spaces, underscores or
+dashes.
+</div></li>
+</ul>
+</div>
+<div data-pos="106:1-107:1">
+<p>Examples:</p>
+</div>
+<div data-pos="108:1-114:1">
+<ul>
+<li><div data-pos="108:5-109:1">
+<code data-pos="108:5-108:21">**Statement**:</code>
+</div></li>
+<li><div data-pos="109:5-110:1">
+<code data-pos="109:5-109:21">**STATEMENT**:</code>
+</div></li>
+<li><div data-pos="110:5-111:1">
+<code data-pos="110:5-110:31">**IMPORTANT_STATEMENT**:</code>
+</div></li>
+<li><div data-pos="111:5-112:1">
+<code data-pos="111:5-111:23">**SPDX-Req-ID**:</code>
+</div></li>
+</ul>
+</div>
+<h2 data-number="2.10" data-pos="113:1-114:1" id="SDOC-LLR-184"><span class="header-section-number">2.10</span> REQUIREMENT: Three conventions
+for meta fields</h2>
+<div data-pos="115:1-116:1">
+<blockquote>
+<div data-pos="115:3-116:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="117:1-118:1">
+<p>StrictDoc shall support reading out SDoc nodes out of Markdown
+sections arranged in the following way: 1) Requirements with
+meta-information stored in bullet point list: .. code-block:: markdown
+### Requirement title - **MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd -
+**UID**: REQ-001 - **Status**: Draft System A shall do B. When a
+Markdown title is followed by a full empty line followed by a bullet
+list and the bullet list follows the format ``- ****: ``, the bullet
+list must be treated as a list of meta fields. The bullet list is
+terminated by one empty line. 2) Requirements with meta-information
+stored in consecutive lines separated by the &quot;\\\\&quot; character: ..
+code-block:: markdown ### Requirement title **MID**:
+abcdabcdabcdabcdabcdabcdabcdabcdabcd \\ **UID**: REQ-001 \\ **Status**:
+Draft System A shall do B. When a Markdown title is followed by a full
+empty line followed by list of lines in the format ``****: \\``, the
+list must be treated as a list of meta fields. The line list is
+terminated by one empty line. The last line shall not end with a &quot;\\&quot;
+character. 3) Requirements with meta-information stored in consecutive
+lines separated by the two empty space characters (as officially
+supported by Markdown): .. code-block:: markdown ### Requirement title
+**MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd **UID**: REQ-001
+**Status**: Draft System A shall do B. When a Markdown title is followed
+by a full empty line followed by list of lines in the format ``****: ``,
+the list must be treated as a list of meta fields. The list is
+terminated by one empty line. Each given node must follow only one of
+these three syntaxes. If StrictDoc encounters that a single node has
+more one or more fields of a mixed style, it must give up parsing this
+node as a valid node, and treat it as a non-normative SECTION/TEXT node.
+As of Markdown MVP, the default and preferred syntax: shall be #2 with
+backslashes.</p>
+</div>
+<h2 data-number="2.11" data-pos="119:1-120:1" id="SDOC-LLR-185"><span class="header-section-number">2.11</span> REQUIREMENT: Valid formats for
+multi-line fields</h2>
+<div data-pos="121:1-122:1">
+<blockquote>
+<div data-pos="121:3-122:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="123:1-124:1">
+<p>StrictDoc shall recognize SDoc node multiline fields from the
+following three formats</p>
+</div>
+<div data-pos="125:1-128:1">
+<ol type="1">
+<li><div data-pos="125:5-126:1">
+Explicit field name:
+</div></li>
+</ol>
+</div>
+<div class="sourceCode" id="cb2" data-pos="127:1-134:1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb2-1"><a href="#cb2-1" aria-hidden="true" tabindex="-1"></a><span class="fu">### Requirement title</span></span>
+<span id="cb2-2"><a href="#cb2-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-3"><a href="#cb2-3" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd</span>
+<span id="cb2-4"><a href="#cb2-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb2-5"><a href="#cb2-5" aria-hidden="true" tabindex="-1"></a> **Statement**: System A shall do B.</span></code></pre></div>
+<div data-pos="135:1-138:1">
+<ol start="2" type="1">
+<li><div data-pos="135:5-136:1">
+Explicit field name with a line break:
+</div></li>
+</ol>
+</div>
+<div class="sourceCode" id="cb3" data-pos="137:1-146:1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="fu">### Requirement title</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd</span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-5"><a href="#cb3-5" aria-hidden="true" tabindex="-1"></a> **Statement**:</span>
+<span id="cb3-6"><a href="#cb3-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb3-7"><a href="#cb3-7" aria-hidden="true" tabindex="-1"></a> System A shall do B.</span></code></pre></div>
+<div data-pos="147:1-150:1">
+<ol start="3" type="1">
+<li><div data-pos="147:5-148:1">
+Implicit field name with a line break:
+</div></li>
+</ol>
+</div>
+<div class="sourceCode" id="cb4" data-pos="149:1-158:1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="fu">### Requirement title</span></span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>**MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a>System A shall do B.</span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>**Rationale**: This requirement is important because XYZ.</span></code></pre></div>
+<div data-pos="159:1-160:1">
+<p>In this case, StrictDoc shall recognize the <code data-pos="159:45-159:67">System A shall do B.</code> as if it was
+written as <code data-pos="159:92-159:129">**Statement**: System A shall do B.</code> and
+recognize the rationale part as an explicitly written multiline
+field.</p>
+</div>
+<div data-pos="161:1-162:1">
+<p>As of Markdown MVP, the default and preferred syntax shall be:</p>
+</div>
+<div data-pos="163:1-167:1">
+<ul>
+<li><div data-pos="163:5-164:1">
+#1 for values with single-line or single-paragraph/block strings.
+</div></li>
+<li><div data-pos="164:5-165:1">
+#2 for values with multiple markdown blocks separated by full empty
+lines.
+</div></li>
+</ul>
+</div>
+<h2 data-number="2.12" data-pos="166:1-167:1" id="SDOC-LLR-202"><span class="header-section-number">2.12</span> REQUIREMENT: Support node
+parent relations</h2>
+<div data-pos="168:1-169:1">
+<blockquote>
+<div data-pos="168:3-169:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="170:1-171:1">
+<p>StrictDoc shall support node relations in Markdown using the meta
+field: .. code-block:: markdown **Relations**: , , ... When reading
+Markdown: - Each UID from the Relations field shall be converted to a
+relation with TYPE: Parent and VALUE: . - All extra spaces shall be
+normalized before parsing to canonical ``, , ...``. - The Markdown
+reader shall not check whether any UID actually exists. This task is
+deferred to the traceability index builder. When writing Markdown, SDoc
+node relations with TYPE: Parent and no ROLE shall be serialized back to
+the same Relations field as a comma-separated UID list. NOTE: For MVP,
+relation roles and Child relation types are out of scope. NOTE: If the
+Relations field is not placed as the meta field but as the content
+field, StrictDoc shall raise a ``StrictDocSemanticError``.</p>
+</div>
+<h2 data-number="2.13" data-pos="172:1-173:1" id="SDOC-LLR-193"><span class="header-section-number">2.13</span> REQUIREMENT: Valid SDoc node
+criteria</h2>
+<div data-pos="174:1-175:1">
+<blockquote>
+<div data-pos="174:3-175:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="176:1-177:1">
+<p>StrictDoc shall recognize a Markdown node as a valid SDoc node when
+the Markdown node meets the following criteria:</p>
+</div>
+<div data-pos="178:1-184:1">
+<ul>
+<li><div data-pos="178:5-179:1">
+The node has one of the meta-fields: MID or UID.
+</div></li>
+<li><div data-pos="179:5-180:1">
+The node has an explicit or implicit content field.
+</div></li>
+<li><div data-pos="180:5-181:1">
+All node fields, meta or content, have a valid syntax.
+</div></li>
+<li><div data-pos="181:5-182:1">
+All node fields, meta or content, are valid default SDoc grammar fields.
+</div></li>
+</ul>
+</div>
+<h2 data-number="2.14" data-pos="183:1-184:1" id="SDOC-LLR-200"><span class="header-section-number">2.14</span> REQUIREMENT: Valid SDoc
+document root node</h2>
+<div data-pos="185:1-186:1">
+<blockquote>
+<div data-pos="185:3-186:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="187:1-188:1">
+<p>StrictDoc shall recognize a root Markdown node as a valid SDoc
+document node when the said Markdown node meets the following
+criteria:</p>
+</div>
+<div data-pos="189:1-193:1">
+<ul>
+<li><div data-pos="189:5-190:1">
+The node has zero or more valid meta-fields.
+</div></li>
+<li><div data-pos="190:5-191:1">
+The valid metafields must satisfy [LINK: SDOC-LLR-194] and be formatted
+according to one meta syntax from [LINK: SDOC-LLR-184].
+</div></li>
+</ul>
+</div>
+<div data-pos="192:1-193:1">
+<p><strong>Example: Valid DOCUMENT (title and metadata) +
+SECTION:</strong></p>
+</div>
+<div class="sourceCode" id="cb5" data-pos="194:1-203:1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Document title</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>**MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd <span class="sc">\\</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>**UID**: DOC-001 <span class="sc">\\</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>**Author**: John Doe</span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a><span class="fu">## Hello world</span></span></code></pre></div>
+<div data-pos="204:1-205:1">
+<p>Such a description shall translate to an SDoc document with:</p>
+</div>
+<div data-pos="206:1-210:1">
+<ul>
+<li><div data-pos="206:5-207:1">
+DOCUMENT node with a title &quot;Document title&quot; and meta fields (MID, UID,
+Author).
+</div></li>
+<li><div data-pos="207:5-208:1">
+SECTION node with a title &quot;Hello world&quot;.
+</div></li>
+</ul>
+</div>
+<div data-pos="209:1-210:1">
+<p><strong>Example: Valid DOCUMENT (title and metadata) +
+TEXT:</strong></p>
+</div>
+<div class="sourceCode" id="cb6" data-pos="211:1-220:1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Document title</span></span>
+<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a>**MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd <span class="sc">\\</span></span>
+<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>**UID**: DOC-001 <span class="sc">\\</span></span>
+<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a>**Author**: John Doe</span>
+<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>Hello world.</span></code></pre></div>
+<div data-pos="221:1-222:1">
+<p>Such a description shall translate to an SDoc document with:</p>
+</div>
+<div data-pos="223:1-227:1">
+<ul>
+<li><div data-pos="223:5-224:1">
+DOCUMENT node with a title &quot;Document title&quot; and meta fields (MID, UID,
+Author).
+</div></li>
+<li><div data-pos="224:5-225:1">
+TEXT node with a statement &quot;Hello world.&quot;.
+</div></li>
+</ul>
+</div>
+<div data-pos="226:1-227:1">
+<p><strong>Example: Valid DOCUMENT (title, no metadata) +
+TEXT:</strong></p>
+</div>
+<div class="sourceCode" id="cb7" data-pos="228:1-235:1"><pre class="sourceCode markdown"><code class="sourceCode markdown"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="fu"># Document title</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a>MID: abc</span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>Hello world.</span></code></pre></div>
+<div data-pos="236:1-237:1">
+<p>Such a description shall translate to an SDoc document with:</p>
+</div>
+<div data-pos="238:1-241:1">
+<ul>
+<li><div data-pos="238:5-239:1">
+DOCUMENT node with a title &quot;Document title&quot; and no meta fields.
+</div></li>
+</ul>
+</div>
+<div data-pos="240:1-241:1">
+<p>- TEXT node with a statement &quot;MID: abc\\Hello world.&quot;.</p>
+</div>
+<h2 data-number="2.15" data-pos="242:1-243:1" id="SDOC-LLR-190"><span class="header-section-number">2.15</span> REQUIREMENT: Reading rules
+\u2014 Default grammar for MVP</h2>
+<div data-pos="244:1-245:1">
+<blockquote>
+<div data-pos="244:3-245:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="246:1-247:1">
+<p>When a parsing Markdown file, StrictDoc shall generate an SDoc
+document using the default SDoc grammar according to the following
+rules:</p>
+</div>
+<div data-pos="248:1-258:1">
+<ul>
+<li><div data-pos="248:5-249:1">
+The only supported node for MVP shall be REQUIREMENT, TEXT and SECTION
+nodes with no other nodes supported.
+</div></li>
+<li><div data-pos="249:5-250:1">
+A valid SDoc node shall be recognized as REQUIREMENT. The Markdown&#39;s
+node title becomes the REQUIREMENT node&#39;s TITLE.
+</div></li>
+<li><div data-pos="250:5-251:1">
+If a Markdown node cannot be recognized as a valid SDoc node, the node
+shall recognize the said Markdown node&#39;s title as a SECTION node with a
+TITLE field set to the title and the node&#39;s body as a regular
+(non-normative) TEXT SDoc node, not as a normative SDoc node. The TEXT
+node&#39;s statement shall contain the Markdown node&#39;s body.
+</div></li>
+<li><div data-pos="251:5-252:1">
+All field names shall be capitalized when created to SDoc field objects.
+For example, <code data-pos="251:91-251:102">Statement</code> becomes
+<code data-pos="251:111-251:122">STATEMENT</code>. At the same time, the
+original field names must be written to the document&#39;s grammar as-is.
+For example, a <code data-pos="251:232-251:248">**Rationale**:</code>
+becomes <code data-pos="251:257-251:268">RATIONALE</code> in the SDoc
+field name and <code data-pos="251:296-251:307">Rationale</code> in the
+human title.
+</div></li>
+<li><div data-pos="252:5-253:1">
+StrictDoc shall defer the validation of MID/UID uniqueness across nodes
+to the TraceabilityIndexBuilder class.
+</div></li>
+<li><div data-pos="253:5-254:1">
+If a given field name appears more than once in a node, StrictDoc shall
+raise a StrictDocSemanticError.
+</div></li>
+<li><div data-pos="254:5-255:1">
+If a node is otherwise invalid and also has duplicate fields, the parser
+shall treat this node as SECTION and TEXT without raising errors.
+</div></li>
+<li><div data-pos="255:5-256:1">
+All SDoc node fields, REQUIREMENT/TEXT/SECTION, must store all field
+values&#39; Markdown content verbatim, without any pre-processing. This
+includes preserving original whitespace/line endings exactly.
+</div></li>
+</ul>
+</div>
+<h2 data-number="2.16" data-pos="257:1-258:1" id="SDOC-LLR-199"><span class="header-section-number">2.16</span> REQUIREMENT: Reading rules
+\u2014 Node hierarchy</h2>
+<div data-pos="259:1-260:1">
+<blockquote>
+<div data-pos="259:3-260:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="261:1-262:1">
+<p>When a parsing Markdown file, StrictDoc shall generate an SDoc
+document using the default SDoc grammar according to the following
+rules:</p>
+</div>
+<div data-pos="263:1-273:1">
+<ul>
+<li><div data-pos="263:5-264:1">
+The first content of a Markdown file shall always be a level 1 <code data-pos="263:68-263:71">#</code> node with the document title, followed
+by an optional set of metafields that translate to SDoc document meta
+(DocumentConfig/custom<span id="metadata" data-pos="263:203-263:224">metadata</span>). The syntax for metafields
+shall be the same to meta fields of a regular markdown node. For MVP,
+all metafields shall be written as custom<span id="metadata" data-pos="263:364-263:385">metadata</span>, with no reserved fields are
+considered.
+</div></li>
+<li><div data-pos="264:5-265:1">
+When the root L1 document title node with (optional meta fields) are
+recognized, StrictDoc shall treat all following text as a TEXT node
+until any other header node starts.
+</div></li>
+<li><div data-pos="265:5-266:1">
+If StrictDoc can recognize the root L1 document node title but no valid
+metadata, StrictDoc shall treat all following text as a TEXT node until
+any other header node starts.
+</div></li>
+<li><div data-pos="266:5-267:1">
+When root metadata has a valid syntax but has invalid semantics
+(duplicated fields), StrictDoc shall raise StrictDocSemanticError.
+</div></li>
+<li><div data-pos="267:5-268:1">
+No other node can be at level 1 except the document title, otherwise
+StrictDocSemanticError must be raised.
+</div></li>
+<li><div data-pos="268:5-269:1;269:5-270:1">
+The Markdown node hierarchy shall be strictly consecutive in forward
+direction:
+</div>
+<div data-pos="269:5-270:1">
+<ul>
+<li><div data-pos="269:9-270:1">
+If a node level forward jump is encountered, for example L1-&gt;L3,
+StrictDoc shall raise a StrictDocSemanticError, regardless of whether
+the node is valid SDoc node or invalid.
+</div></li>
+</ul>
+</div></li>
+<li><div data-pos="270:5-271:1">
+The node level jumps in backward direction, for example L4-&gt;L2, are
+allowed if the node with a lower level results at level 2 or higher.
+</div></li>
+</ul>
+</div>
+<h2 data-number="2.17" data-pos="272:1-273:1" id="SDOC-LLR-198"><span class="header-section-number">2.17</span> REQUIREMENT: Writing rules
+\u2014 Default grammar for MVP</h2>
+<div data-pos="274:1-275:1">
+<blockquote>
+<div data-pos="274:3-275:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="276:1-277:1">
+<p>When writing an SDoc document to a markdown file, StrictDoc shall
+generate the Markdown markup according to the following rules:</p>
+</div>
+<div data-pos="278:1-287:1">
+<ul>
+<li><div data-pos="278:5-279:1;279:5-280:1">
+The meta fields shall be written:
+</div>
+<div data-pos="279:5-280:1;280:5-281:1">
+<ul>
+<li><div data-pos="279:9-280:1">
+Using the format #2 for new documents not coming from file system (using
+backslashes for all meta-field lines but last one).
+</div></li>
+<li><div data-pos="280:9-281:1">
+Using the format that was auto-detected during reading a Markdown file
+in case the file is already on the disk and follows a certain
+convention. The detection shall be detected at a file level and
+memorized individually by each SDoc document.
+</div></li>
+</ul>
+</div></li>
+<li><div data-pos="281:5-282:1">
+The content fields shall be written using formats #1 (Explicit field
+name) for single-paragraph fields and #2 (Explicit field name with a
+line break) for multi-paragraph fields. A multi-paragraph field is one
+that results in multiple markdown paragraphs/blocks each separated
+visually by a full empty line.
+</div></li>
+<li><div data-pos="282:5-283:1">
+StrictDoc shall write the SDoc fields as Markdown fields based on SDoc
+human title as recorded in the document grammar element field human
+title. If a human title is missing in the grammar, the field name shall
+be used.
+</div></li>
+<li><div data-pos="283:5-284:1">
+All fields shall be printed in the same order like they are stored in an
+SDoc node. Meta vs content decision shall be based on a standard
+SDocNode/GrammarElement decision for multiline index.
+</div></li>
+<li><div data-pos="284:5-285:1">
+The node level shall be used for defining the Markdown node level. The
+document title becomes the top-level section level 1. SDoc node level 1
+becomes <code data-pos="284:156-284:160">##</code>, level 2 becomes
+<code data-pos="284:178-284:183">###</code>, etc.
+</div></li>
+</ul>
+</div>
+<h2 data-number="2.18" data-pos="286:1-287:1" id="SDOC-LLR-187"><span class="header-section-number">2.18</span> REQUIREMENT: Robust Markdown
+backend</h2>
+<div data-pos="288:1-289:1">
+<blockquote>
+<div data-pos="288:3-289:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="290:1-291:1">
+<p>StrictDoc shall employ a well-maintained Markdown library with Python
+support.</p>
+</div>
+<h1 data-number="3" data-pos="292:1-293:1" id="SEC-002"><span class="header-section-number">3</span> HTML2PDF export</h1>
+<h2 data-number="3.1" data-pos="294:1-295:1" id="SDOC-LLR-203"><span class="header-section-number">3.1</span> REQUIREMENT: Use of
+html2pdf4doc</h2>
+<div data-pos="296:1-297:1">
+<blockquote>
+<div data-pos="296:3-297:1">
+<p>RATIONALE: html2pdf4doc is part of the StrictDoc project that is
+developed by the core team. It allows printing PDF pages directly from
+StrictDoc HTML and gives the developers a full control over the printing
+mechanics.</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="298:1-299:1">
+<p>StrictDoc shall export HTML documents using html2pdf4doc library with
+the following document types supported already:</p>
+</div>
+<div data-pos="300:1-303:1">
+<ul>
+<li><div data-pos="300:5-301:1">
+StrictDoc&#39;s main DOC document type/screen.
+</div></li>
+</ul>
+</div>
+<h2 data-number="3.2" data-pos="302:1-303:1" id="SDOC-LLR-204"><span class="header-section-number">3.2</span> REQUIREMENT: Use of PyPDF for
+PDF postprocessing</h2>
+<div data-pos="304:1-305:1">
+<blockquote>
+<div data-pos="304:3-305:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="306:1-307:1">
+<blockquote>
+<div data-pos="306:3-307:1">
+<p>RATIONALE: The extra processing with PyPDF is needed because there
+are limitations of what developers can do when printing HTML to PDF with
+html2pdf4doc based on Google Chrome Driver.</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="308:1-309:1">
+<p>StrictDoc shall employ the PyPDF library for the following tasks:</p>
+</div>
+<div data-pos="310:1-313:1">
+<ul>
+<li><div data-pos="310:5-311:1">
+Rewriting all StrictDoc&#39;s LINK/ANCHOR to documents of the same project
+tree into the PDF anchors.
+</div></li>
+</ul>
+</div>
+<h2 data-number="3.3" data-pos="312:1-313:1" id="SDOC-LLR-205"><span class="header-section-number">3.3</span> REQUIREMENT: Cross-linking PDF
+documents from one project tree</h2>
+<div data-pos="314:1-315:1">
+<blockquote>
+<div data-pos="314:3-315:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="316:1-317:1">
+<blockquote>
+<div data-pos="316:3-317:1">
+<p>RATIONALE: Allows a reader to navigate between PDF documents of the
+same project as requested by the parent requirement.</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="318:1-319:1">
+<blockquote>
+<div data-pos="318:3-319:1">
+<p>NOTES: The PDF cross-document linking is supported by the PDF format
+natively but is known to not work in all PDF viewers. For example, it is
+known to work well in Linux PDF viewers, but not macOS Preview
+viewer.</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="320:1-321:1">
+<p>When exporting HTML documents to PDF, StrictDoc shall rewrite all
+LINK/ANCHOR to documents of the same project tree into the PDF document
+links/anchors according to the following rule: - The Chrome Driver
+resolves the relative links to other documents with full paths, e.g.,
+``file:///-PDF.html#``. - The PDF postprocessing step shall convert
+these absolute ``file:///...` links to just relative paths: ``.pdf``
+without the leading slash character. - If one PDF is in a nested folder
+compared to another PDF, the link to this PDF anchor shall have relative
+``../`` path components.</p>
+</div>
+<h1 data-number="4" data-pos="322:1-323:1" id="SEC-003"><span class="header-section-number">4</span> Source code parsing</h1>
+<h2 data-number="4.1" data-pos="324:1-325:1" id="SDOC_SPECIFICATION_TYPE_SINGLETON-sec1.1"><span class="header-section-number">4.1</span> Rust @SEC-003.001</h2>
+<h3 data-number="4.1.1" data-pos="326:1-327:1" id="SDOC-LLR-164"><span class="header-section-number">4.1.1</span> REQUIREMENT: Auto-scoped
+relation markers in Rust docs</h3>
+<div data-pos="328:1-331:1">
+<blockquote>
+<div data-pos="328:3-331:1">
+<p>NOTES: Note that doc comments are syntactic sugar for <code data-pos="328:57-328:72">doc attribute</code>_ s, which shall also be
+supported. To figure detailed doc comment rules from the rust-lang
+specification it’s sometimes useful to check for general attribute
+rules, if explicit doc comment rules are missing.</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="332:1-333:1">
+<p>.. _doc attribute:
+https://doc.rust-lang.org/rustdoc/write-documentation/the-doc-attribute.html</p>
+</div>
+<div data-pos="334:1-335:1">
+<p>If a StrictDoc relation marker is inside a <a href="https://doc.rust-lang.org/rust-by-example/meta/doc.html#doc-comments" data-pos="334:44-334:132">Rust doc comment</a>, the marker scope shall
+be set to exact the item the Rust language defines as target of the
+containing doc comment. The <code data-pos="334:253-334:275">@relation(scope=...)</code> parameter shall
+therefore be optional and shall be ignored if provided.</p>
+</div>
+<div class="sourceCode" id="cb8" data-pos="336:1-345:1"><pre class="sourceCode numberSource rust numberLines"><code class="sourceCode rust"><span id="cb8-1"><a href="#cb8-1"></a><span class="co">/// @relation(REQ-1)</span></span>
+<span id="cb8-2"><a href="#cb8-2"></a><span class="kw">impl</span> Foo <span class="op">{</span></span>
+<span id="cb8-3"><a href="#cb8-3"></a></span>
+<span id="cb8-4"><a href="#cb8-4"></a>    <span class="co">/// @relation(REQ-2)</span></span>
+<span id="cb8-5"><a href="#cb8-5"></a>    <span class="kw">fn</span> foo() <span class="op">{</span></span>
+<span id="cb8-6"><a href="#cb8-6"></a>    <span class="op">}</span></span>
+<span id="cb8-7"><a href="#cb8-7"></a><span class="op">}</span></span></code></pre></div>
+<div data-pos="346:1-347:1">
+<p>In the given example, the first marker shall link REQ-1 to the <code data-pos="346:64-346:74">impl Foo</code> implementation, highlighting
+lines 1 to 7. The second marker shall link REQ-2 to the <code data-pos="346:160-346:170">fn foo()</code> function, highlighting lines
+4 to 6.</p>
+</div>
+<h3 data-number="4.1.2" data-pos="348:1-349:1" id="SDOC-LLR-165"><span class="header-section-number">4.1.2</span> REQUIREMENT: Inner doc
+attributes</h3>
+<div data-pos="350:1-351:1">
+<blockquote>
+<div data-pos="350:3-351:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="352:1-353:1">
+<p>StrictDoc shall support relation markers in <a href="https://doc.rust-lang.org/reference/attributes.html#r-attributes.inner" data-pos="352:45-352:124">inner</a> <a href="https://doc.rust-lang.org/rustdoc/write-documentation/the-doc-attribute.html#the-doc-attribute" data-pos="352:125-352:236">doc attribute</a> s.</p>
+</div>
+<h3 data-number="4.1.3" data-pos="354:1-355:1" id="SDOC-LLR-166"><span class="header-section-number">4.1.3</span> REQUIREMENT: Inner line
+docs</h3>
+<div data-pos="356:1-357:1">
+<blockquote>
+<div data-pos="356:3-357:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="358:1-359:1">
+<p>StrictDoc shall support auto-scoped relation relation markers in <a href="https://doc.rust-lang.org/reference/comments.html#grammar-INNER_LINE_DOC" data-pos="358:66-358:157">inner line docs</a>.</p>
+</div>
+<h3 data-number="4.1.4" data-pos="360:1-361:1" id="SDOC-LLR-167"><span class="header-section-number">4.1.4</span> REQUIREMENT: Inner block
+docs</h3>
+<div data-pos="362:1-363:1">
+<blockquote>
+<div data-pos="362:3-363:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="364:1-365:1">
+<p>StrictDoc shall support auto-scoped relation relation markers in <a href="https://doc.rust-lang.org/reference/comments.html#grammar-INNER_BLOCK_DOC" data-pos="364:66-364:159">inner block docs</a>.</p>
+</div>
+<h3 data-number="4.1.5" data-pos="366:1-367:1" id="SDOC-LLR-168"><span class="header-section-number">4.1.5</span> REQUIREMENT: Outer doc
+attributes</h3>
+<div data-pos="368:1-369:1">
+<blockquote>
+<div data-pos="368:3-369:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="370:1-371:1">
+<p>StrictDoc shall support auto-scoped relation markers in <a href="https://doc.rust-lang.org/reference/attributes.html#r-attributes.outer" data-pos="370:57-370:136">outer</a> <a href="https://doc.rust-lang.org/rustdoc/write-documentation/the-doc-attribute.html#the-doc-attribute" data-pos="370:137-370:248">doc attribute</a> s.</p>
+</div>
+<h3 data-number="4.1.6" data-pos="372:1-373:1" id="SDOC-LLR-169"><span class="header-section-number">4.1.6</span> REQUIREMENT: Outer line
+docs</h3>
+<div data-pos="374:1-375:1">
+<blockquote>
+<div data-pos="374:3-375:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="376:1-377:1">
+<p>StrictDoc shall support auto-scoped relation markers in <a href="https://doc.rust-lang.org/reference/comments.html#grammar-OUTER_LINE_DOC" data-pos="376:57-376:148">outer line docs</a>.</p>
+</div>
+<h3 data-number="4.1.7" data-pos="378:1-379:1" id="SDOC-LLR-170"><span class="header-section-number">4.1.7</span> REQUIREMENT: Outer block
+docs</h3>
+<div data-pos="380:1-381:1">
+<blockquote>
+<div data-pos="380:3-381:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="382:1-383:1">
+<p>StrictDoc shall support auto-scoped relation markers in <a href="https://doc.rust-lang.org/reference/comments.html#railroad-OUTER_BLOCK_DOC" data-pos="382:57-382:151">outer block docs</a>.</p>
+</div>
+<h3 data-number="4.1.8" data-pos="384:1-385:1" id="SDOC-LLR-171"><span class="header-section-number">4.1.8</span> REQUIREMENT: File, line and
+range markers</h3>
+<div data-pos="386:1-387:1">
+<blockquote>
+<div data-pos="386:3-387:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="388:1-389:1">
+<p>StrictDoc shall point to lines and line ranges of Rust code by using
+file, line and range markers. These marker types shall be parsed from <a href="https://doc.rust-lang.org/rust-by-example/hello/comment.html#comments" data-pos="388:140-388:244">regular line and block comments</a>.</p>
+</div>
+<div data-pos="390:1-391:1">
+<p>Note: File markers may also result from the inner doc comments of the
+top-level module.</p>
+</div>
+<h3 data-number="4.1.9" data-pos="392:1-393:1" id="SDOC-LLR-172"><span class="header-section-number">4.1.9</span> REQUIREMENT: Source nodes
+from doc comments</h3>
+<div data-pos="394:1-395:1">
+<blockquote>
+<div data-pos="394:3-395:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="396:1-397:1">
+<p>If a Rust doc comments contains custom tags, and the containing Rust
+source file matches an entry in the source node configuration, StrictDoc
+shall create document nodes from the custom tags and automatically link
+the created node with the Rust item targeted by the doc comment.</p>
+</div>
+<h3 data-number="4.1.10" data-pos="398:1-399:1" id="SDOC-LLR-173"><span class="header-section-number">4.1.10</span> REQUIREMENT: Forward
+relations to Rust items</h3>
+<div data-pos="400:1-401:1">
+<blockquote>
+<div data-pos="400:3-401:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="402:1-403:1">
+<p>StrictDoc shall support linking from a requirement in SDoc to a
+language item in Rust code by using a <code data-pos="402:103-402:109">FILE</code> relation of type <code data-pos="402:127-402:137">FUNCTION</code>. For example</p>
+</div>
+<pre class="strictdoc" data-pos="404:1-412:1"><code>[REQUIREMENT]
+UID: REQ-1
+RELATIONS:
+- TYPE: File
+  VALUE: file.rs
+  FUNCTION: file::foo</code></pre>
+<div data-pos="413:1-414:1">
+<p>This shall work for all kinds of Rust items that have a <a href="https://doc.rust-lang.org/reference/paths.html#canonical-paths" data-pos="413:57-413:137">canonical path</a>, including const, enum, fn,
+mod, static, struct, trait, type, union.</p>
+</div>
+<h3 data-number="4.1.11" data-pos="415:1-416:1" id="SDOC-LLR-174"><span class="header-section-number">4.1.11</span> REQUIREMENT: Forward
+relation by canonical path</h3>
+<div data-pos="417:1-418:1">
+<blockquote>
+<div data-pos="417:3-418:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="419:1-421:1">
+<blockquote>
+<div data-pos="419:3-421:1">
+<p>NOTES: The canonical path of an item can be observed with :code:<code data-pos="419:67-419:101">objdump -t lib.o --demangle=rust</code>. For
+example, given this source file</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="422:1-423:1;423:4-424:1">
+<p>.. code-block:: rust :number-lines:</p>
+</div>
+<div data-pos="425:4-426:1">
+<p>pub mod foo {</p>
+</div>
+<pre data-pos="427:5-428:1;428:5-429:1;429:5-431:1;431:5-433:1;433:5-434:1;434:5-435:1;435:5-436:1"><code>   pub trait Foo {
+       fn foo(&amp;self) {}
+   }
+
+   pub struct Bar(i32);
+
+   impl Foo for Bar {
+       fn foo(&amp;self) {}
+   }</code></pre>
+<div data-pos="436:4-437:1">
+<p>}</p>
+</div>
+<div data-pos="438:1-439:1">
+<p>:code:<code data-pos="438:7-438:16">objdump</code> will show</p>
+</div>
+<div data-pos="440:1-441:1">
+<p>.. code-block:: shell</p>
+</div>
+<div data-pos="442:4-443:1">
+<p>&lt;lib::foo::Bar as lib::foo::Foo&gt;::foo</p>
+</div>
+<div data-pos="444:1-445:1">
+<p>Alas, a forward relation would be</p>
+</div>
+<div data-pos="446:1-447:1">
+<p>.. code-block:: strictdoc</p>
+</div>
+<div data-pos="448:4-449:1;449:4-450:1;450:4-451:1;451:4-452:1">
+<p>[REQUIREMENT] UID: REQ-1 RELATIONS:</p>
+</div>
+<div data-pos="451:4-456:1">
+<ul>
+<li><div data-pos="451:6-452:1;452:6-453:1;453:6-454:1">
+TYPE: File VALUE: file.rs FUNCTION: &lt;lib::foo::Bar as
+lib::foo::Foo&gt;::foo
+</div></li>
+</ul>
+</div>
+<div data-pos="455:1-456:1">
+<p>The identifier for forward relations shall be the <a href="https://doc.rust-lang.org/reference/paths.html#canonical-paths" data-pos="455:51-455:131">canonical path</a> as the rustc compiler would
+set it when invoked for a single file like</p>
+</div>
+<pre class="shell" data-pos="457:1-460:1"><code>rustc --crate-type rlib --emit=obj src/lib.rs</code></pre>
+<div data-pos="461:1-462:1">
+<p>Note: <code data-pos="461:7-461:20">cargo build</code> usually result
+in a different canonical path, since it considers the file position
+relative to the crate root. Using a single file as root is a
+simplification, needed because StrictDoc is unaware of the Rust file and
+directory-based module hierarchy.</p>
+</div>
+<h3 data-number="4.1.12" data-pos="463:1-464:1" id="SDOC-LLR-175"><span class="header-section-number">4.1.12</span> REQUIREMENT: Collapse doc
+comments</h3>
+<div data-pos="465:1-466:1">
+<blockquote>
+<div data-pos="465:3-466:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="467:1-468:1">
+<p>Multiple scattered doc comments shall be collapsed as done by the <a href="https://github.com/rust-lang/rust/tree/main/src/tools/rustdoc" data-pos="467:67-467:139">rustdoc</a> tool when using the collapse-docs
+option to determine the highlight range(s).</p>
+</div>
+<div data-pos="469:1-470:1">
+<p>For example, rustdoc would collapse alle these comments into the
+description of <code data-pos="469:81-469:91">fn foo()</code></p>
+</div>
+<div class="sourceCode" id="cb12" data-pos="471:1-489:1"><pre class="sourceCode numberSource rust numberLines"><code class="sourceCode rust"><span id="cb12-1"><a href="#cb12-1"></a><span class="co">/// Some</span></span>
+<span id="cb12-2"><a href="#cb12-2"></a><span class="co">/// line</span></span>
+<span id="cb12-3"><a href="#cb12-3"></a></span>
+<span id="cb12-4"><a href="#cb12-4"></a><span class="co">/// doc,</span></span>
+<span id="cb12-5"><a href="#cb12-5"></a></span>
+<span id="cb12-6"><a href="#cb12-6"></a><span class="co">/**</span></span>
+<span id="cb12-7"><a href="#cb12-7"></a><span class="co">  * and some</span></span>
+<span id="cb12-8"><a href="#cb12-8"></a><span class="co">  * block dock,</span></span>
+<span id="cb12-9"><a href="#cb12-9"></a><span class="co">  */</span></span>
+<span id="cb12-10"><a href="#cb12-10"></a></span>
+<span id="cb12-11"><a href="#cb12-11"></a><span class="at">#[</span>doc <span class="op">=</span> <span class="st">&quot;and some&quot;</span><span class="at">]</span></span>
+<span id="cb12-12"><a href="#cb12-12"></a></span>
+<span id="cb12-13"><a href="#cb12-13"></a><span class="at">#[</span>doc <span class="op">=</span> <span class="st">&quot;doc attr.&quot;</span><span class="at">]</span></span>
+<span id="cb12-14"><a href="#cb12-14"></a></span>
+<span id="cb12-15"><a href="#cb12-15"></a><span class="kw">fn</span> foo() <span class="op">{</span></span>
+<span id="cb12-16"><a href="#cb12-16"></a><span class="op">}</span></span></code></pre></div>
+<div data-pos="490:1-491:1">
+<p>In the given example, the StrictDoc highlight range for the relation
+marker shall be from line 1 to line 16.</p>
+</div>
+<h3 data-number="4.1.13" data-pos="492:1-493:1" id="SDOC-LLR-176"><span class="header-section-number">4.1.13</span> REQUIREMENT: Rust marker
+descriptions</h3>
+<div data-pos="494:1-495:1">
+<blockquote>
+<div data-pos="494:3-495:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="496:1-497:1">
+<p>StrictDoc should use the marker labels as <a href="https://doc.rust-lang.org/stable/rustdoc/" data-pos="496:43-496:95">rustdoc</a> would set them in the description
+of a documented node.</p>
+</div>
+<h3 data-number="4.1.14" data-pos="498:1-499:1" id="SDOC-LLR-177"><span class="header-section-number">4.1.14</span> REQUIREMENT: Valid positions
+of doc comments</h3>
+<div data-pos="500:1-501:1">
+<blockquote>
+<div data-pos="500:3-501:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="502:1-503:1">
+<blockquote>
+<div data-pos="502:3-503:1">
+<p>NOTES: Since doc comments are syntactic sugar for doc attributes,
+allowed position rules for attributes apply.</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="504:1-505:1">
+<p>StrictDoc shall find doc comments where the language <a href="https://doc.rust-lang.org/reference/attributes.html#r-attributes.allowed-position" data-pos="504:54-504:145">allows</a> them and ignore those in other
+positions.</p>
+</div>
+<h3 data-number="4.1.15" data-pos="506:1-507:1" id="SDOC-LLR-178"><span class="header-section-number">4.1.15</span> REQUIREMENT: Inner doc
+comments for functions</h3>
+<div data-pos="508:1-509:1">
+<blockquote>
+<div data-pos="508:3-509:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="510:1-511:1">
+<p>StrictDoc shall find inner doc comments in function blocks.</p>
+</div>
+<h3 data-number="4.1.16" data-pos="512:1-513:1" id="SDOC-LLR-179"><span class="header-section-number">4.1.16</span> REQUIREMENT: Inner doc
+comments for modules</h3>
+<div data-pos="514:1-515:1">
+<blockquote>
+<div data-pos="514:3-515:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="516:1-517:1">
+<p>StrictDoc shall find inner doc comments in module blocks.</p>
+</div>
+<h3 data-number="4.1.17" data-pos="518:1-519:1" id="SDOC-LLR-180"><span class="header-section-number">4.1.17</span> REQUIREMENT: Inner doc
+comments for external blocks</h3>
+<div data-pos="520:1-521:1">
+<blockquote>
+<div data-pos="520:3-521:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="522:1-523:1">
+<p>StrictDoc shall find inner doc comments in external blocks.</p>
+</div>
+<h3 data-number="4.1.18" data-pos="524:1-525:1" id="SDOC-LLR-181"><span class="header-section-number">4.1.18</span> REQUIREMENT: Inner doc
+comments for implementation blocks</h3>
+<div data-pos="526:1-527:1">
+<blockquote>
+<div data-pos="526:3-527:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="528:1-529:1">
+<p>StrictDoc shall find inner doc comments in implementation blocks.</p>
+</div>
+<h3 data-number="4.1.19" data-pos="530:1-531:1" id="SDOC-LLR-182"><span class="header-section-number">4.1.19</span> REQUIREMENT: Allowed
+position for outer docs</h3>
+<div data-pos="532:1-533:1">
+<blockquote>
+<div data-pos="532:3-533:1">
+<p>STATUS: Active</p>
+</div>
+</blockquote>
+</div>
+<div data-pos="534:1-535:1">
+<p>StrictDoc shall find outer doc comments in <a href="https://doc.rust-lang.org/reference/attributes.html#r-attributes.allowed-position" data-pos="534:44-534:146">allowed positions</a> as specified by the Rust
+language:</p>
+</div>
+<div data-pos="536:1-543:1">
+<ul>
+<li><div data-pos="536:5-537:1">
+All <a href="https://doc.rust-lang.org/reference/items.html#r-items.syntax" data-pos="536:9-536:78">item</a> declarations
+</div></li>
+<li><div data-pos="537:5-538:1">
+Most statements
+</div></li>
+<li><div data-pos="538:5-539:1">
+Block expressions, but only when they are the outer expression of an
+expression statement or the final expression of another block
+expression.
+</div></li>
+<li><div data-pos="539:5-540:1">
+Enum variants, struct and union fields
+</div></li>
+<li><div data-pos="540:5-541:1">
+Generic lifetime or type parameter
+</div></li>
+<li><div data-pos="541:5-542:1">
+Expressions in limited situations
+</div></li>
+<li><div data-pos="542:5-543:1">
+Function, closure and function pointer parameters
+</div></li>
+</ul>
+</div>
+</body>
+</html>

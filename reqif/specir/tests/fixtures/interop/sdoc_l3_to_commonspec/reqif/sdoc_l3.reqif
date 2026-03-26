@@ -1,0 +1,867 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<REQ-IF xmlns="http://www.omg.org/spec/ReqIF/20110401/reqif.xsd" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <THE-HEADER>
+    <REQ-IF-HEADER IDENTIFIER="REQ-IF-HEADER-2358ff09-c142-4cd7-ba32-6c520fa1e677">
+      <CREATION-TIME>2026-03-25T20:43:45.587454-03:00</CREATION-TIME>
+      <REQ-IF-TOOL-ID>strictdoc</REQ-IF-TOOL-ID>
+      <REQ-IF-VERSION>1.0</REQ-IF-VERSION>
+      <SOURCE-TOOL-ID>strictdoc</SOURCE-TOOL-ID>
+      <TITLE>Documentation export by StrictDoc</TITLE>
+    </REQ-IF-HEADER>
+  </THE-HEADER>
+  <CORE-CONTENT>
+    <REQ-IF-CONTENT>
+      <DATATYPES>
+        <DATATYPE-DEFINITION-STRING IDENTIFIER="SDOC_DATATYPE_SINGLE_LINE_STRING" LAST-CHANGE="2026-03-25T23:43:45Z" MAX-LENGTH="10000"/>
+        <DATATYPE-DEFINITION-STRING IDENTIFIER="SDOC_DATATYPE_MULTI_LINE_STRING" LAST-CHANGE="2026-03-25T23:43:45Z" MAX-LENGTH="10000"/>
+      </DATATYPES>
+      <SPEC-TYPES>
+        <SPECIFICATION-TYPE IDENTIFIER="SDOC_SPECIFICATION_TYPE_SINGLETON" LAST-CHANGE="2026-03-25T20:43:45.587454-03:00" LONG-NAME="SDOC_SPECIFICATION_TYPE_SINGLETON"/>
+        <SPEC-OBJECT-TYPE IDENTIFIER="SECTION_35da3e174e5d4c8ab8fb06362c505405" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="SECTION">
+          <SPEC-ATTRIBUTES>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="SECTION_35da3e174e5d4c8ab8fb06362c505405_MID" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="MID">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_SINGLE_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="SECTION_35da3e174e5d4c8ab8fb06362c505405_ReqIF.ForeignID" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="ReqIF.ForeignID">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_SINGLE_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="SECTION_35da3e174e5d4c8ab8fb06362c505405_ReqIF.ChapterName" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="ReqIF.ChapterName">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_SINGLE_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+          </SPEC-ATTRIBUTES>
+        </SPEC-OBJECT-TYPE>
+        <SPEC-OBJECT-TYPE IDENTIFIER="TEXT_1d15d80707e54322b1ae4db7d3efafe9" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="TEXT">
+          <SPEC-ATTRIBUTES>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="TEXT_1d15d80707e54322b1ae4db7d3efafe9_MID" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="MID">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_SINGLE_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="TEXT_1d15d80707e54322b1ae4db7d3efafe9_ReqIF.ForeignID" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="ReqIF.ForeignID">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_SINGLE_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="TEXT_1d15d80707e54322b1ae4db7d3efafe9_ReqIF.Text" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="ReqIF.Text">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_MULTI_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+          </SPEC-ATTRIBUTES>
+        </SPEC-OBJECT-TYPE>
+        <SPEC-OBJECT-TYPE IDENTIFIER="REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="REQUIREMENT">
+          <SPEC-ATTRIBUTES>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_MID" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="MID">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_SINGLE_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="ReqIF.ForeignID">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_SINGLE_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="STATUS">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_SINGLE_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="ReqIF.Name">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_SINGLE_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="ReqIF.Text">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_MULTI_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_RATIONALE" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="RATIONALE">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_MULTI_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+            <ATTRIBUTE-DEFINITION-STRING IDENTIFIER="REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_NOTES" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="NOTES">
+              <TYPE>
+                <DATATYPE-DEFINITION-STRING-REF>SDOC_DATATYPE_MULTI_LINE_STRING</DATATYPE-DEFINITION-STRING-REF>
+              </TYPE>
+            </ATTRIBUTE-DEFINITION-STRING>
+          </SPEC-ATTRIBUTES>
+        </SPEC-OBJECT-TYPE>
+        <SPEC-RELATION-TYPE IDENTIFIER="Parent-8f4a7187-afa0-4f89-926b-dedb7a514315" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="Parent"/>
+        <SPEC-RELATION-TYPE IDENTIFIER="File-40bf92ed-58ab-4464-a5e7-d49e4ecab731" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="File"/>
+      </SPEC-TYPES>
+      <SPEC-OBJECTS>
+        <SPEC-OBJECT IDENTIFIER="TEXT-43af83ed-3771-49b8-b01f-9607ccd10445" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="The level 3 low-level requirements specification of StrictDoc (L3/LLR) is derived from StrictDoc&#x27;s L2 high-level (L2/HLR) requirements specification. The purpose of L3/LLR is to provide the lowest-level requirements from which StrictDoc&#x27;s source code can be directly implemented without further information.\n\nIt is at the L3 level that the StrictDoc requirements are specified for the actual software implementers, including both the StrictDoc developers and AI agents such as Codex. At the same time, the L2/HLR requirements provide the framework for the WHAT and WHY of the implementation instructions that are specified by this L3/LLR.\n\nNOTE: This specification level is under construction. Many L2/HLR requirements will be gradually moved to be here at the L3/HLR level.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>TEXT_1d15d80707e54322b1ae4db7d3efafe9_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>TEXT_1d15d80707e54322b1ae4db7d3efafe9</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="SECTION-0f084381-2dcb-4195-99ad-73cd5d108503" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Markdown text markup">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>SECTION_35da3e174e5d4c8ab8fb06362c505405_ReqIF.ChapterName</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>SECTION_35da3e174e5d4c8ab8fb06362c505405</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-60bc7d2c-a46d-4892-88e8-84a8df9c4397" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-183">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Read Markdown markup">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall support reading Markdown files into in-memory SDoc documents.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-1b81bed2-3bdc-41c0-b15b-7b81d9f31221" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-197">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Write Markdown markup">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall support writing in-memory SDoc documents to Markdown files.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-4b0351dd-23f9-4b49-809f-0765d94697a6" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-192">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Markdown files discovery">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall discover Markdown files ``*.md`` and ``*.markdown`` using the same mechanism as used for SDoc files.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-b002cca4-6fe4-4791-8cac-651fcd0f32d6" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-196">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Identical Markdown content by import/export roundtrip">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall ensure that identical Markdown content is produced every time StrictDoc reads a Markdown file and then writes it to another Markdown file.\n\nThe following aspects shall additionally apply:\n\n- For MVP, line-endings should support both LF (Linux/macOS-style) and CRLF (Windows-style).\n- The ``export --formats=markdown`` shall work for any format readable by StrictDoc, including Markdown itself, SDoc, RDF (future growth), ReqIF, etc.\n\nNOTE: The write-back to Markdown file must happen through proper AST serialization, not just by giving back the original read Markdown source.\n\nExceptions:\n\nEdge cases related to handling non-default input formats are postponed after the Markdown MVP is implemented. For example:\n\n- Markdown reader encounters content format #3 (implicit field) via [LINK: SDOC-LLR-185], but writer always emits #1/#2 for content via [LINK: SDOC-LLR-198]. In this case the content will not be identical, but it is accepted for an MVP implementation.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="A consistent import/export roundtrip implementation and testing reduces the risk of the Markdown bi-directional import/export corruption.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_RATIONALE</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-4054b864-e9fb-4984-9f36-f1436c161fcc" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-191">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Markdown formats">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall rely only on CommonMark core syntax v0.31.2 for SDoc node recognition.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="CommonMark core is the most portable target across parsers.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_RATIONALE</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-9f0d2713-d591-4eb8-8ab3-2658d827e70a" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-186">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Meta fields vs content fields">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall recognize the following Markdown nodes as SDoc nodes:\n\n.. code-block:: markdown\n\n    ### Node title\n    (empty line)\n    **Meta field name 1**:\n    **Meta field name 2**:\n    ...\n    (empty line)\n    **Note content field 1**: ...\n    (empty line)\n    **Note content field 2**: ...\n    ...\n\nAn SDoc node terminates when another Markdown section header or an EOF is encountered.\n\nNOTE: There are no limitations to node level. A Markdown node can be at level 2, 3, etc. The level 1 is served for a root document node (document title with optional fields).">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-37f79369-56ba-4942-93fa-fc8911f657e9" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-189">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="One Markdown file \u2014 One SDoc document">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall parse Markdown files using the &quot;one Markdown file \u2014 one SDoc document&quot; principle.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-ffbf3ad0-696a-4eb7-87b6-af2240a22597" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-195">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Strict ban for redundant empty lines">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="When a parsing Markdown file, if StrictDoc encounters two or more consecutive empty lines and the lines are not within a Markdown code block or a Markdown blockquote block, StrictDoc shall raise a StrictDocSemanticError.\n\nNOTE: Empty lines includes whitespace-only lines which StrictDoc shall ban as well.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-5df803e7-fb9d-4945-aca7-a597c17d8faf" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-194">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Syntax for meta and content field names">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall recognize the meta and content field names according to the following rules:\n\n- Format is: ``**Field name**:``.\n- Alphanumeric character range, separated by spaces, underscores or dashes.\n\nExamples:\n\n- ``**Statement**:``\n- ``**STATEMENT**:``\n- ``**IMPORTANT_STATEMENT**:``\n- ``**SPDX-Req-ID**:``">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-21bd4477-b3ee-49fb-b8ad-5186a51ea177" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-184">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Three conventions for meta fields">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall support reading out SDoc nodes out of Markdown sections arranged in the following way:\n\n1) Requirements with meta-information stored in bullet point list:\n\n.. code-block:: markdown\n\n    ### Requirement title\n\n    - **MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd\n    - **UID**: REQ-001\n    - **Status**: Draft\n\n     System A shall do B.\n\nWhen a Markdown title is followed by a full empty line followed by a bullet list and the bullet list follows the format ``- **&lt;Name&gt;**: &lt;Value&gt;``, the bullet list must be treated as a list of meta fields. The bullet list is terminated by one empty line.\n\n2) Requirements with meta-information stored in consecutive lines separated by the &quot;\\\\&quot; character:\n\n.. code-block:: markdown\n\n    ### Requirement title\n\n    **MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd \\\n    **UID**: REQ-001 \\\n    **Status**: Draft\n\n    System A shall do B.\n\nWhen a Markdown title is followed by a full empty line followed by list of lines in the format ``**&lt;Name&gt;**: &lt;Value&gt; \\``, the list must be treated as a list of meta fields.\nThe line list is terminated by one empty line. The last line shall not end with a &quot;\\&quot; character.\n\n3) Requirements with meta-information stored in consecutive lines separated by the two empty space characters (as officially supported by Markdown):\n\n.. code-block:: markdown\n\n    ### Requirement title\n\n    **MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd&lt;two spaces&gt;\n    **UID**: REQ-001&lt;two spaces&gt;\n    **Status**: Draft&lt;two spaces&gt;\n\n    System A shall do B.\n\nWhen a Markdown title is followed by a full empty line followed by list of lines in the format ``**&lt;Name&gt;**: &lt;Value&gt;&lt;two spaces&gt;``, the list must be treated as a list of meta fields. The list is terminated by one empty line.\n\nEach given node must follow only one of these three syntaxes. If StrictDoc encounters that a single node has more one or more fields of a mixed style, it must give up parsing this node as a valid node, and treat it as a non-normative SECTION/TEXT node.\n\nAs of Markdown MVP, the default and preferred syntax: shall be #2 with backslashes.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-dbd5e586-babd-4e65-ba15-202a9c156d00" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-185">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Valid formats for multi-line fields">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall recognize SDoc node multiline fields from the following three formats\n\n1) Explicit field name:\n\n.. code-block:: markdown\n\n    ### Requirement title\n\n    - **MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd\n\n     **Statement**: System A shall do B.\n\n2) Explicit field name with a line break:\n\n.. code-block:: markdown\n\n    ### Requirement title\n\n    - **MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd\n\n     **Statement**:\n\n     System A shall do B.\n\n3) Implicit field name with a line break:\n\n.. code-block:: markdown\n\n    ### Requirement title\n\n    **MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd\n\n    System A shall do B.\n\n    **Rationale**: This requirement is important because XYZ.\n\nIn this case, StrictDoc shall recognize the ``System A shall do B.`` as if it was written as ``**Statement**: System A shall do B.`` and recognize the rationale part as an explicitly written multiline field.\n\nAs of Markdown MVP, the default and preferred syntax shall be:\n\n- #1 for values with single-line or single-paragraph/block strings.\n- #2 for values with multiple markdown blocks separated by full empty lines.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-00e8c08e-512d-46b8-a45e-b2597313f95c" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-202">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Support node parent relations">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall support node relations in Markdown using the meta field:\n\n.. code-block:: markdown\n\n    **Relations**: &lt;UID-1&gt;, &lt;UID-2&gt;, ...\n\nWhen reading Markdown:\n- Each UID from the Relations field shall be converted to a relation with TYPE: Parent and VALUE: &lt;UID&gt;.\n- All extra spaces shall be normalized before parsing to canonical ``&lt;UID-1&gt;, &lt;UID-2&gt;, ...``.\n- The Markdown reader shall not check whether any UID actually exists. This task is deferred to the traceability index builder.\n\nWhen writing Markdown, SDoc node relations with TYPE: Parent and no ROLE shall be serialized back to the same Relations field as a comma-separated UID list.\n\nNOTE: For MVP, relation roles and Child relation types are out of scope.\n\nNOTE: If the Relations field is not placed as the meta field but as the content field, StrictDoc shall raise a ``StrictDocSemanticError``.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-6d937e06-a5b6-434a-a648-96ebee82089f" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-193">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Valid SDoc node criteria">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall recognize a Markdown node as a valid SDoc node when the Markdown node meets the following criteria:\n\n- The node has one of the meta-fields: MID or UID.\n- The node has an explicit or implicit content field.\n- All node fields, meta or content, have a valid syntax.\n- All node fields, meta or content, are valid default SDoc grammar fields.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-4819e1ef-9c4b-4651-9186-9f3662a0d03c" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-200">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Valid SDoc document root node">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall recognize a root Markdown node as a valid SDoc document node when the said Markdown node meets the following criteria:\n\n- The node has zero or more valid meta-fields.\n- The valid metafields must satisfy [LINK: SDOC-LLR-194] and be formatted according to one meta syntax from [LINK: SDOC-LLR-184].\n\n**Example: Valid DOCUMENT (title and metadata) + SECTION:**\n\n.. code-block:: markdown\n\n    # Document title\n\n    **MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd \\\n    **UID**: DOC-001 \\\n    **Author**: John Doe\n\n    ## Hello world\n\nSuch a description shall translate to an SDoc document with:\n\n- DOCUMENT node with a title &quot;Document title&quot; and meta fields (MID, UID, Author).\n- SECTION node with a title &quot;Hello world&quot;.\n\n**Example: Valid DOCUMENT (title and metadata) + TEXT:**\n\n.. code-block:: markdown\n\n    # Document title\n\n    **MID**: abcdabcdabcdabcdabcdabcdabcdabcdabcd \\\n    **UID**: DOC-001 \\\n    **Author**: John Doe\n\n    Hello world.\n\nSuch a description shall translate to an SDoc document with:\n\n- DOCUMENT node with a title &quot;Document title&quot; and meta fields (MID, UID, Author).\n- TEXT node with a statement &quot;Hello world.&quot;.\n\n**Example: Valid DOCUMENT (title, no metadata) + TEXT:**\n\n.. code-block:: markdown\n\n    # Document title\n\n    MID: abc\n\n    Hello world.\n\nSuch a description shall translate to an SDoc document with:\n\n- DOCUMENT node with a title &quot;Document title&quot; and no meta fields.\n- TEXT node with a statement &quot;MID: abc\\\\n\\\\nHello world.&quot;.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-3354a1ae-2e2b-4510-8bbe-083e388b1072" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-190">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Reading rules \u2014 Default grammar for MVP">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="When a parsing Markdown file, StrictDoc shall generate an SDoc document using the default SDoc grammar according to the following rules:\n\n- The only supported node for MVP shall be REQUIREMENT, TEXT and SECTION nodes with no other nodes supported.\n- A valid SDoc node shall be recognized as REQUIREMENT. The Markdown&#x27;s node title becomes the REQUIREMENT node&#x27;s TITLE.\n- If a Markdown node cannot be recognized as a valid SDoc node, the node shall recognize the said Markdown node&#x27;s title as a SECTION node with a TITLE field set to the title and the node&#x27;s body as a regular (non-normative) TEXT SDoc node, not as a normative SDoc node. The TEXT node&#x27;s statement shall contain the Markdown node&#x27;s body.\n- All field names shall be capitalized when created to SDoc field objects. For example, ``Statement`` becomes ``STATEMENT``. At the same time, the original field names must be written to the document&#x27;s grammar as-is. For example, a ``**Rationale**:`` becomes ``RATIONALE`` in the SDoc field name and ``Rationale`` in the human title.\n- StrictDoc shall defer the validation of MID/UID uniqueness across nodes to the TraceabilityIndexBuilder class.\n- If a given field name appears more than once in a node, StrictDoc shall raise a StrictDocSemanticError.\n- If a node is otherwise invalid and also has duplicate fields, the parser shall treat this node as SECTION and TEXT without raising errors.\n- All SDoc node fields, REQUIREMENT/TEXT/SECTION, must store all field values&#x27; Markdown content verbatim, without any pre-processing. This includes preserving original whitespace/line endings exactly.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-453dd571-52d5-4eaa-9790-df61f9241094" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-199">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Reading rules \u2014 Node hierarchy">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="When a parsing Markdown file, StrictDoc shall generate an SDoc document using the default SDoc grammar according to the following rules:\n\n- The first content of a Markdown file shall always be a level 1 ``#`` node with the document title, followed by an optional set of metafields that translate to SDoc document meta (DocumentConfig/custom_metadata). The syntax for metafields shall be the same to meta fields of a regular markdown node. For MVP, all metafields shall be written as custom_metadata, with no reserved fields are considered.\n\n- When the root L1 document title node with (optional meta fields) are recognized, StrictDoc shall treat all following text as a TEXT node until any other header node starts.\n\n- If StrictDoc can recognize the root L1 document node title but no valid metadata, StrictDoc shall treat all following text as a TEXT node until any other header node starts.\n\n- When root metadata has a valid syntax but has invalid semantics (duplicated fields), StrictDoc shall raise StrictDocSemanticError.\n\n- No other node can be at level 1 except the document title, otherwise StrictDocSemanticError must be raised.\n\n- The Markdown node hierarchy shall be strictly consecutive in forward direction:\n\n  - If a node level forward jump is encountered, for example L1-&gt;L3, StrictDoc shall raise a StrictDocSemanticError, regardless of whether the node is valid SDoc node or invalid.\n\n- The node level jumps in backward direction, for example L4-&gt;L2, are allowed if the node with a lower level results at level 2 or higher.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-24976199-58e3-4f07-a166-c94e818b9bca" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-198">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Writing rules \u2014 Default grammar for MVP">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="When writing an SDoc document to a markdown file, StrictDoc shall generate the Markdown markup according to the following rules:\n\n- The meta fields shall be written:\n\n  - Using the format #2 for new documents not coming from file system (using backslashes for all meta-field lines but last one).\n  - Using the format that was auto-detected during reading a Markdown file in case the file is already on the disk and follows a certain convention. The detection shall be detected at a file level and memorized individually by each SDoc document.\n\n- The content fields shall be written using formats #1 (Explicit field name) for single-paragraph fields and #2 (Explicit field name with a line break) for multi-paragraph fields. A multi-paragraph field is one that results in multiple markdown paragraphs/blocks each separated visually by a full empty line.\n\n- StrictDoc shall write the SDoc fields as Markdown fields based on SDoc human title as recorded in the document grammar element field human title. If a human title is missing in the grammar, the field name shall be used.\n\n- All fields shall be printed in the same order like they are stored in an SDoc node. Meta vs content decision shall be based on a standard SDocNode/GrammarElement decision for multiline index.\n\n- The node level shall be used for defining the Markdown node level. The document title becomes the top-level section level 1. SDoc node level 1 becomes ``##``, level 2 becomes ``###``, etc.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-608d51ca-7537-4157-b9b7-1152c3aada33" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-187">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Robust Markdown backend">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall employ a well-maintained Markdown library with Python support.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="SECTION-57529510-8a2b-4ed5-a361-2a5d2acfa7ff" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="HTML2PDF export">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>SECTION_35da3e174e5d4c8ab8fb06362c505405_ReqIF.ChapterName</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>SECTION_35da3e174e5d4c8ab8fb06362c505405</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-78a025da-ed13-48f0-8a0a-1591e637cc0d" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-203">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Use of html2pdf4doc">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall export HTML documents using html2pdf4doc library with the following document types supported already:\n\n- StrictDoc&#x27;s main DOC document type/screen.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="html2pdf4doc is part of the StrictDoc project that is developed by the core team. It allows printing PDF pages directly from StrictDoc HTML and gives the developers a full control over the printing mechanics.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_RATIONALE</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-d1c1d934-1279-412e-95fa-366d31735696" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-204">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Use of PyPDF for PDF postprocessing">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="StrictDoc shall employ the PyPDF library for the following tasks:\n\n- Rewriting all StrictDoc&#x27;s LINK/ANCHOR to documents of the same project tree into the PDF anchors.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="The extra processing with PyPDF is needed because there are limitations of what developers can do when printing HTML to PDF with html2pdf4doc based on Google Chrome Driver.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_RATIONALE</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+        <SPEC-OBJECT IDENTIFIER="REQUIREMENT-1b284465-df3c-4e68-bc3b-0ef04f8a778d" LAST-CHANGE="2026-03-25T23:43:45Z">
+          <VALUES>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="SDOC-LLR-205">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.ForeignID</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Active">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_STATUS</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Cross-linking PDF documents from one project tree">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Name</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="When exporting HTML documents to PDF, StrictDoc shall rewrite all LINK/ANCHOR to documents of the same project tree into the PDF document links/anchors according to the following rule:\n\n- The Chrome Driver resolves the relative links to other documents with full paths, e.g., ``file:///&lt;full-path-to-another-SDoc-document&gt;-PDF.html#&lt;anchor&gt;``.\n- The PDF postprocessing step shall convert these absolute ``file:///...` links to just relative paths: ``&lt;relative-path-to-another-SDoc-document&gt;.pdf`` without the leading slash character.\n- If one PDF is in a nested folder compared to another PDF, the link to this PDF anchor shall have relative ``../`` path components.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_ReqIF.Text</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="Allows a reader to navigate between PDF documents of the same project as requested by the parent requirement.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_RATIONALE</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+            <ATTRIBUTE-VALUE-STRING THE-VALUE="The PDF cross-document linking is supported by the PDF format natively but is known to not work in all PDF viewers. For example, it is known to work well in Linux PDF viewers, but not macOS Preview viewer.">
+              <DEFINITION>
+                <ATTRIBUTE-DEFINITION-STRING-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e_NOTES</ATTRIBUTE-DEFINITION-STRING-REF>
+              </DEFINITION>
+            </ATTRIBUTE-VALUE-STRING>
+          </VALUES>
+          <TYPE>
+            <SPEC-OBJECT-TYPE-REF>REQUIREMENT_c6b7ca9391394360a9aed1c333b03c5e</SPEC-OBJECT-TYPE-REF>
+          </TYPE>
+        </SPEC-OBJECT>
+      </SPEC-OBJECTS>
+      <SPEC-RELATIONS>
+      </SPEC-RELATIONS>
+      <SPECIFICATIONS>
+        <SPECIFICATION IDENTIFIER="SPECIFICATION-2a4c4fcb-88dd-4aba-ba18-3664f8ab4439" LAST-CHANGE="2026-03-25T23:43:45Z" LONG-NAME="StrictDoc Low-Level Requirements Specification (L3)">
+          <TYPE>
+            <SPECIFICATION-TYPE-REF>SDOC_SPECIFICATION_TYPE_SINGLETON</SPECIFICATION-TYPE-REF>
+          </TYPE>
+          <CHILDREN>
+            <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-5666fc5f-046b-4b34-ad72-0a98c1bf2825" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+              <OBJECT>
+                <SPEC-OBJECT-REF>TEXT-43af83ed-3771-49b8-b01f-9607ccd10445</SPEC-OBJECT-REF>
+              </OBJECT>
+            </SPEC-HIERARCHY>
+            <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-de251d28-a121-42cd-8b54-37c5724bd7a2" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+              <OBJECT>
+                <SPEC-OBJECT-REF>SECTION-0f084381-2dcb-4195-99ad-73cd5d108503</SPEC-OBJECT-REF>
+              </OBJECT>
+              <CHILDREN>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-4eb83e63-2f8b-4032-ae4a-85ee721b6313" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-60bc7d2c-a46d-4892-88e8-84a8df9c4397</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-bc78958d-7157-45d3-8690-7ed2b4f3e01b" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-1b81bed2-3bdc-41c0-b15b-7b81d9f31221</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-0719471b-60d1-4c40-ab50-4d0bc00c1ceb" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-4b0351dd-23f9-4b49-809f-0765d94697a6</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-9bf14528-ae1b-4361-adb2-aac5d4290b69" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-b002cca4-6fe4-4791-8cac-651fcd0f32d6</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-2e8d4d93-493e-4b94-b94f-cf89a71dad3b" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-4054b864-e9fb-4984-9f36-f1436c161fcc</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-a94f47a4-bc41-4737-ab7a-03ccffb0f934" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-9f0d2713-d591-4eb8-8ab3-2658d827e70a</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-47c14076-db72-4453-8c55-add4019468ca" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-37f79369-56ba-4942-93fa-fc8911f657e9</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-73196893-3859-4c92-a201-224ec23ab98a" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-ffbf3ad0-696a-4eb7-87b6-af2240a22597</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-7ba47362-d956-4762-bdc4-6076883c8438" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-5df803e7-fb9d-4945-aca7-a597c17d8faf</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-8f439ba5-0f16-4fee-82ee-41c5fb6943e2" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-21bd4477-b3ee-49fb-b8ad-5186a51ea177</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-07ef5c72-1225-442b-bdc1-3054efb20c5e" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-dbd5e586-babd-4e65-ba15-202a9c156d00</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-b3c80052-24ec-410e-a04c-379f94a2485c" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-00e8c08e-512d-46b8-a45e-b2597313f95c</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-6fc1412f-aa81-4fba-baab-088e5ffac9ee" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-6d937e06-a5b6-434a-a648-96ebee82089f</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-ff605a75-b306-4c34-89d2-ee2dcecd98ba" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-4819e1ef-9c4b-4651-9186-9f3662a0d03c</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-8d560434-fab2-45cd-b23f-530022943f4a" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-3354a1ae-2e2b-4510-8bbe-083e388b1072</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-4029271a-34d2-4c89-ae16-b1efa6e91b6e" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-453dd571-52d5-4eaa-9790-df61f9241094</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-b10257e7-9cbe-4bb6-b7fb-ef3f89ccd480" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-24976199-58e3-4f07-a166-c94e818b9bca</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-95b49597-c16d-455c-888b-633db926bf93" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-608d51ca-7537-4157-b9b7-1152c3aada33</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+              </CHILDREN>
+            </SPEC-HIERARCHY>
+            <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-fb010bba-e05b-41a2-9e16-a583d5884c12" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+              <OBJECT>
+                <SPEC-OBJECT-REF>SECTION-57529510-8a2b-4ed5-a361-2a5d2acfa7ff</SPEC-OBJECT-REF>
+              </OBJECT>
+              <CHILDREN>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-f60e5885-0ebf-4220-993c-5ed7cca03d51" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-78a025da-ed13-48f0-8a0a-1591e637cc0d</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-a3822f46-f84a-4778-a58a-d5a25e25aa8c" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-d1c1d934-1279-412e-95fa-366d31735696</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+                <SPEC-HIERARCHY IDENTIFIER="SPEC-IDENTIFIER-4528389b-0bf2-4f88-8225-421fb12bdf3c" IS-EDITABLE="false" IS-TABLE-INTERNAL="false" LAST-CHANGE="2026-03-25T23:43:45Z">
+                  <OBJECT>
+                    <SPEC-OBJECT-REF>REQUIREMENT-1b284465-df3c-4e68-bc3b-0ef04f8a778d</SPEC-OBJECT-REF>
+                  </OBJECT>
+                </SPEC-HIERARCHY>
+              </CHILDREN>
+            </SPEC-HIERARCHY>
+          </CHILDREN>
+        </SPECIFICATION>
+      </SPECIFICATIONS>
+    </REQ-IF-CONTENT>
+  </CORE-CONTENT>
+</REQ-IF>

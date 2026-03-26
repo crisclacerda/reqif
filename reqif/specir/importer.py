@@ -477,12 +477,42 @@ def _finalize_pids_and_labels(
 
     When *id_map* and *rowid_to_reqif* are provided, each object's PID is
     registered as the stable id_map key (instead of the transient rowid).
+
+    SECTION objects without a PID get hierarchical numbering based on their
+    nesting level (e.g. ``SEC-001``, ``SEC-001.001``).
     """
     rows = conn.execute(
-        "SELECT id, type_ref, pid, title_text FROM spec_objects "
+        "SELECT id, type_ref, pid, title_text, level FROM spec_objects "
         "WHERE specification_ref = ? ORDER BY type_ref, file_seq",
         (spec_id,),
     ).fetchall()
+
+    # Pre-compute hierarchical SECTION PIDs in document order.
+    section_rows = conn.execute(
+        "SELECT id, level FROM spec_objects "
+        "WHERE specification_ref = ? AND type_ref = 'SECTION' ORDER BY file_seq",
+        (spec_id,),
+    ).fetchall()
+    section_pids: Dict[int, str] = {}
+    if section_rows:
+        # Track counter per nesting depth.  level_counters[depth] holds the
+        # running count at that depth.  When we go to a shallower level, we
+        # reset all deeper counters.
+        min_level = min(r[1] for r in section_rows)
+        level_counters: Dict[int, int] = {}
+        for sec_id, sec_level in section_rows:
+            depth = sec_level - min_level  # 0-based
+            level_counters.setdefault(depth, 0)
+            level_counters[depth] += 1
+            # Reset deeper counters.
+            for d in list(level_counters):
+                if d > depth:
+                    level_counters[d] = 0
+            # Build hierarchical PID: SEC-001, SEC-001.001, etc.
+            parts = []
+            for d in range(depth + 1):
+                parts.append(f"{level_counters.get(d, 0):03d}")
+            section_pids[sec_id] = f"SEC-{'.'.join(parts)}"
 
     # Count by type for auto PID generation.
     type_counters: Dict[str, int] = {}
@@ -514,12 +544,19 @@ def _finalize_pids_and_labels(
                 pid_prefix = match.group(1).upper()
                 pid_sequence = int(match.group(2))
         else:
-            type_counters.setdefault(type_ref, 0)
-            type_counters[type_ref] += 1
-            pid_prefix = type_ref
-            pid_sequence = type_counters[type_ref]
-            pid = f"{pid_prefix}-{pid_sequence:03d}"
-            pid_auto = 1
+            # Use hierarchical PID for SECTIONs.
+            if type_ref == "SECTION" and obj_id in section_pids:
+                pid = section_pids[obj_id]
+                pid_prefix = "SEC"
+                pid_sequence = None
+                pid_auto = 1
+            else:
+                type_counters.setdefault(type_ref, 0)
+                type_counters[type_ref] += 1
+                pid_prefix = type_ref
+                pid_sequence = type_counters[type_ref]
+                pid = f"{pid_prefix}-{pid_sequence:03d}"
+                pid_auto = 1
 
         conn.execute(
             "UPDATE spec_objects SET pid = ?, pid_prefix = ?, pid_sequence = ?, "

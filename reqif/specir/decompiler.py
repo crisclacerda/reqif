@@ -203,12 +203,26 @@ def _render_object(
     type_ref = obj.get("type_ref", "")
     type_prefix = f"{type_ref}: " if type_ref and type_ref != "SECTION" else ""
     pid_suffix = f" @{obj['pid']}" if obj.get("pid") else ""
+
+    # For SECTIONs, prefer ReqIF.ChapterName over the UUID-based title_text.
     title = obj.get("title_text") or "Untitled"
+    chapter_attr_idx = None
+    if type_ref == "SECTION":
+        for i, attr in enumerate(attrs):
+            if attr["name"] == "ReqIF.ChapterName":
+                val = _format_attr_value(conn, attr)
+                if val:
+                    title = val
+                    chapter_attr_idx = i
+                break
+
     lines.append(f"{hashes} {type_prefix}{title}{pid_suffix}")
     lines.append("")
 
-    # Attributes (> name: value)
-    for attr in attrs:
+    # Attributes (> name: value) — skip ChapterName already used as title.
+    for i, attr in enumerate(attrs):
+        if i == chapter_attr_idx:
+            continue
         val = _format_attr_value(conn, attr)
         if val is not None:
             lines.append(f"> {attr['name']}: {val}")
