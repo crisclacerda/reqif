@@ -49,6 +49,11 @@ def _now() -> str:
 
 # ── SQL helpers ──────────────────────────────────────────────────────────
 
+def _has_column(conn: sqlite3.Connection, table: str, column: str) -> bool:
+    rows = conn.execute(f"PRAGMA table_info({table})").fetchall()
+    return any(str(r[1]) == column for r in rows)
+
+
 def _get_spec_title(conn: sqlite3.Connection, spec_id: str) -> str:
     row = conn.execute(
         "SELECT long_name, pid FROM specifications WHERE identifier = ?",
@@ -92,21 +97,29 @@ def _load_attribute_types(conn: sqlite3.Connection) -> list:
 
 
 def _load_spec_objects(conn: sqlite3.Connection, spec_id: str) -> list:
+    content_xhtml_expr = (
+        "content_xhtml" if _has_column(conn, "spec_objects", "content_xhtml")
+        else "NULL AS content_xhtml"
+    )
     return conn.execute(
-        "SELECT id, type_ref, pid, title_text, level, file_seq, content_xhtml, ast "
+        f"SELECT id, type_ref, pid, title_text, level, file_seq, {content_xhtml_expr}, ast "
         "FROM spec_objects WHERE specification_ref = ? ORDER BY file_seq ASC",
         (spec_id,),
     ).fetchall()
 
 
 def _load_attribute_values(conn: sqlite3.Connection, spec_id: str) -> Dict[str, list]:
+    xhtml_value_expr = (
+        "av.xhtml_value" if _has_column(conn, "spec_attribute_values", "xhtml_value")
+        else "NULL AS xhtml_value"
+    )
     rows = conn.execute(
-        """
+        f"""
         SELECT
           av.owner_object_id, av.name, av.raw_value,
           av.string_value, av.int_value, av.real_value,
           av.bool_value, av.date_value, av.enum_ref,
-          av.datatype, av.xhtml_value,
+          av.datatype, {xhtml_value_expr},
           ev.key AS enum_key,
           av.ast
         FROM spec_attribute_values av

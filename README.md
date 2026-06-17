@@ -8,6 +8,7 @@ ReqIF is a Python library for working with ReqIF format.
 - Formatting (pretty-printing) ReqIF
 - Basic validation of ReqIF
 - Anonymizing ReqIF files to safely exchange the problematic ReqIF files.
+- Import/export between ReqIF and SpecIR SQLite databases via `reqif.specir`.
 
 ## Getting started
 
@@ -142,6 +143,70 @@ reqif
 usage: reqif [-h] {passthrough,anonymize,dump,format,validate,version} ...
 reqif: error: the following arguments are required: command
 ```
+
+### SpecIR import/export
+
+The `reqif.specir` module provides a database-only bridge between ReqIF and
+SpecIR, the SQLite intermediate representation used by SpecCompiler. This
+integration does not require ReqIF-specific code in SpecCompiler: SpecCompiler
+can produce or consume `specir.db`, while this package handles ReqIF encoding
+and decoding.
+
+Import a ReqIF file into a SpecIR database:
+
+```commandline
+python -m reqif.specir import \
+  --input requirements.reqif \
+  --db specir.db \
+  --spec-id imported_requirements
+```
+
+Export a SpecIR specification to ReqIF:
+
+```commandline
+python -m reqif.specir export \
+  --db build/specir.db \
+  --output requirements.reqif \
+  --spec-id srs
+```
+
+If the database contains exactly one specification, `--spec-id` can be omitted
+for export. Databases created by `reqif.specir import` can be exported again,
+and databases created by current SpecCompiler builds are supported directly.
+
+To convert ReqIF into an editable CommonSpec project:
+
+```commandline
+python -m reqif.specir import-decompile \
+  --input requirements.reqif \
+  --output-dir ./project \
+  --overwrite
+```
+
+To decompile an existing SpecIR database:
+
+```commandline
+python -m reqif.specir decompile \
+  --db build/specir.db \
+  --output-dir ./project \
+  --spec-id srs \
+  --overwrite
+```
+
+For StrictDoc interoperability, export from SpecIR to ReqIF and let StrictDoc
+decode the ReqIF:
+
+```commandline
+python -m reqif.specir export \
+  --db build/specir.db \
+  --output build/export.reqif \
+  --spec-id srs
+
+strictdoc import reqif p01_sdoc build/export.reqif ./sdoc_output
+```
+
+See `reqif/specir/GUIDE.md` for the full mapping rules, Python API examples,
+and interop test coverage.
 
 ### Validate command
 

@@ -5,6 +5,7 @@ Tests the command-line interface end-to-end via subprocess.
 from __future__ import annotations
 
 import os
+import sqlite3
 import subprocess
 import tempfile
 import unittest
@@ -38,6 +39,29 @@ class TestCLI(unittest.TestCase):
             out = os.path.join(tmp, "exported.reqif")
             r = _run(["import", "--input", _TC1300, "--db", db])
             self.assertEqual(r.returncode, 0, f"Import failed: {r.stderr}")
+
+            conn = sqlite3.connect(db)
+            try:
+                object_count = conn.execute(
+                    "SELECT COUNT(*) FROM spec_objects"
+                ).fetchone()[0]
+                relation_count = conn.execute(
+                    "SELECT COUNT(*) FROM spec_relations"
+                ).fetchone()[0]
+                titles = [
+                    r[0] for r in conn.execute(
+                        "SELECT title_text FROM spec_objects ORDER BY file_seq"
+                    ).fetchall()
+                ]
+            finally:
+                conn.close()
+            self.assertEqual(object_count, 2)
+            self.assertEqual(relation_count, 1)
+            self.assertEqual(
+                titles,
+                ["ID_TC1300_SpecObject1", "ID_TC1300_SpecObject2"],
+            )
+
             r = _run(["export", "--db", db, "--output", out])
             self.assertEqual(r.returncode, 0, f"Export failed: {r.stderr}")
             with open(out) as f:
