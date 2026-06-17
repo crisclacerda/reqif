@@ -67,7 +67,10 @@ class SpecificationTypeParser:
             output += f' LONG-NAME="{spec_type.long_name}"'
 
         # Some documents have a SPECIFICATION-TYPE without any SPEC-ATTRIBUTES.
-        if spec_type.is_self_closed:
+        has_attributes = (
+            spec_type.spec_attributes is not None and len(spec_type.spec_attributes) > 0
+        )
+        if spec_type.is_self_closed and not has_attributes:
             output += "/>\n"
             return output
         else:
@@ -75,32 +78,9 @@ class SpecificationTypeParser:
 
         if spec_type.spec_attributes is not None:
             output += "          <SPEC-ATTRIBUTES>\n"
-
-            for attribute in spec_type.spec_attributes:
-                output += f"            <{attribute.attribute_type.get_spec_type_tag()}"
-                if attribute.description is not None:
-                    output += f' DESC="{attribute.description}"'
-                output += f' IDENTIFIER="{attribute.identifier}"'
-                if attribute.editable is not None:
-                    editable_value = "true" if attribute.editable else "false"
-                    output += f' IS-EDITABLE="{editable_value}"'
-                if attribute.last_change:
-                    output += f' LAST-CHANGE="{attribute.last_change}"'
-                output += f' LONG-NAME="{attribute.long_name}"'
-                output += ">\n"
-                output += "              <TYPE>\n"
-                output += (
-                    "                "
-                    f"<{attribute.attribute_type.get_definition_tag()}>"
-                    f"{attribute.datatype_definition}"
-                    f"</{attribute.attribute_type.get_definition_tag()}>"
-                    "\n"
-                )
-                output += "              </TYPE>\n"
-                output += "            </"
-                output += f"{attribute.attribute_type.get_spec_type_tag()}"
-                output += ">\n"
-
+            output += AttributeDefinitionParser.unparse_xhtml_attribute_definition(
+                attribute_definitions=spec_type.spec_attributes
+            )
             output += "          </SPEC-ATTRIBUTES>\n"
 
         output += "        </SPECIFICATION-TYPE>\n"

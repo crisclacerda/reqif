@@ -67,6 +67,71 @@ with open(output_file_path, "w", encoding="UTF-8") as output_file:
 The contents of `reqif_xml_output` should be the same as the contents of the 
 `input_file`.
 
+### Reporting parsing/unparsing progress
+
+ReqIF files produced by real-world tools can contain hundreds of thousands of
+spec objects, and parsing or unparsing them can take long enough that an
+application wants to show progress to its user. `ReqIFParser.parse`,
+`ReqIFParser.parse_from_string`, and `ReqIFUnparser.unparse` accept an
+optional `progress` callback, following the convention of
+[`urllib.request.urlretrieve(reporthook=...)`](https://docs.python.org/3/library/urllib.request.html#urllib.request.urlretrieve):
+
+```py
+from reqif.parser import ReqIFParser
+
+def print_progress(section: str, items_done: int, items_total: int) -> None:
+    if items_done % 1000 == 0 or items_done == items_total:
+        print(f"{section}: {items_done}/{items_total}")
+
+reqif_bundle = ReqIFParser.parse("input.reqif", progress=print_progress)
+```
+
+`section` is the ReqIF container tag being processed (`"DATATYPES"`,
+`"SPEC-TYPES"`, `"SPECIFICATIONS"`, `"SPEC-RELATIONS"`, `"SPEC-OBJECTS"`, or
+`"SPEC-RELATION-GROUPS"`), `items_done` is the number of the container's
+direct children processed so far, and `items_total` is the container's total
+number of direct children. The callback is invoked once per child, so a
+callback that displays progress should throttle its own output, as in the
+example above.
+
+When no callback is passed, the parsing and unparsing behavior is unchanged.
+
+The `.reqifz` entry points (`ReqIFZParser.parse`, `ReqIFZUnparser.unparse`)
+accept the same callback but report progress at the archive member level:
+one call per processed member, with the member's filename as the `section`
+argument and the archive's total number of members as `items_total`.
+
+### Logging
+
+The `reqif` library logs its diagnostic messages (for example, warnings about
+unknown tags) through Python's standard
+[`logging`](https://docs.python.org/3/howto/logging.html) module, using the
+`"reqif"` logger hierarchy. Following the
+[standard convention for libraries](https://docs.python.org/3/howto/logging.html#configuring-logging-for-a-library),
+the library does not configure any handlers itself, so by default an
+application that imports `reqif` sees no log output.
+
+To see the library's warnings on the console, attach a handler to the
+`"reqif"` logger:
+
+```py
+import logging
+
+logging.getLogger("reqif").addHandler(logging.StreamHandler())
+```
+
+Any other `logging` configuration works as well, e.g. `logging.basicConfig()`
+or a handler that writes the records to a file. To also see the messages that
+accompany recoverable schema errors (the errors themselves are collected in
+`reqif_bundle.exceptions`), set the logger's level to `DEBUG`:
+
+```py
+logging.getLogger("reqif").setLevel(logging.DEBUG)
+```
+
+The `reqif` command-line tool attaches its own handler, so its output does
+not depend on this configuration.
+
 ## Using ReqIF as a command-line tool
 
 After installing the `reqif` Pip package, the `reqif` command becomes available

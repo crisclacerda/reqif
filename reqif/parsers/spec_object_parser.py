@@ -1,3 +1,4 @@
+import logging
 from typing import List, Optional
 
 from reqif.models.reqif_spec_object import (
@@ -5,6 +6,8 @@ from reqif.models.reqif_spec_object import (
     SpecObjectAttribute,
 )
 from reqif.parsers.attribute_value_parser import AttributeValueParser
+
+logger = logging.getLogger(__name__)
 
 
 class SpecObjectParser:
@@ -32,13 +35,9 @@ class SpecObjectParser:
         )
 
         xml_spec_values = spec_object_xml.find("VALUES")
-        attributes: Optional[List[SpecObjectAttribute]] = (
-            AttributeValueParser.parse_attribute_values(xml_spec_values)
+        attributes: List[SpecObjectAttribute] = (
+            AttributeValueParser.parse_attribute_values(xml_spec_values) or []
         )
-
-        # FIXME: Technically, we can get a ReqIF file where VALUES is empty.
-        # But don't want to break the interfaces for now.
-        assert attributes is not None
 
         return ReqIFSpecObject(
             xml_node=spec_object_xml,
@@ -81,7 +80,7 @@ class SpecObjectParser:
             elif child_tag == "TYPE":
                 output += SpecObjectParser._unparse_spec_object_type(spec_object)
             else:
-                print(f"warning: Unknown child tag: {child_tag}.")  # noqa: T201
+                logger.warning("Unknown child tag: %s.", child_tag)
 
         output += "        </SPEC-OBJECT>\n"
 

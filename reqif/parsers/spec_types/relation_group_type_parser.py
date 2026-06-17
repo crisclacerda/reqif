@@ -3,6 +3,7 @@ from typing import Optional
 
 from reqif.helpers.lxml import lxml_is_self_closed_tag
 from reqif.models.reqif_relation_group_type import ReqIFRelationGroupType
+from reqif.parsers.attribute_definition_parser import AttributeDefinitionParser
 
 
 class RelationGroupTypeParser:
@@ -31,12 +32,17 @@ class RelationGroupTypeParser:
             xml_attributes["LAST-CHANGE"] if "LAST-CHANGE" in xml_attributes else None
         )
 
+        attribute_definitions = AttributeDefinitionParser.parse_attribute_definitions(
+            xml_spec_relation_type_xml
+        )
+
         return ReqIFRelationGroupType(
             is_self_closed=is_self_closed,
             description=description,
             identifier=identifier,
             last_change=last_change,
             long_name=long_name,
+            attribute_definitions=attribute_definitions,
         )
 
     @staticmethod
@@ -49,9 +55,22 @@ class RelationGroupTypeParser:
             output += f' LAST-CHANGE="{spec_relation_type.last_change}"'
         if spec_relation_type.long_name is not None:
             output += f' LONG-NAME="{spec_relation_type.long_name}"'
-        if spec_relation_type.is_self_closed:
+        has_attributes = (
+            spec_relation_type.attribute_definitions is not None
+            and len(spec_relation_type.attribute_definitions) > 0
+        )
+        if spec_relation_type.is_self_closed and not has_attributes:
             output += "/>\n"
-        else:
-            output += ">\n"
-            output += "        </RELATION-GROUP-TYPE>\n"
+            return output
+
+        output += ">\n"
+
+        if spec_relation_type.attribute_definitions is not None:
+            output += "          <SPEC-ATTRIBUTES>\n"
+            output += AttributeDefinitionParser.unparse_xhtml_attribute_definition(
+                attribute_definitions=spec_relation_type.attribute_definitions
+            )
+            output += "          </SPEC-ATTRIBUTES>\n"
+
+        output += "        </RELATION-GROUP-TYPE>\n"
         return output
