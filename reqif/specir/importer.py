@@ -229,16 +229,21 @@ def _import_specifications(
 ) -> Dict[str, str]:
     """Insert specification rows.  Returns reqif_spec_id → specir_spec_id."""
     spec_map: Dict[str, str] = {}
+    if spec_slug and len(specifications) > 1:
+        raise ValueError(
+            "--spec-id/spec_slug can only override single-specification ReqIF imports"
+        )
 
     for i, spec in enumerate(specifications):
         specir_id = spec_slug or _slugify(spec.long_name or spec.identifier) or f"spec_{i}"
         type_ref = spec_type_map.get(spec.specification_type or "") if spec.specification_type else None
+        root_path = _FROM_FILE if len(specifications) == 1 else f"{_FROM_FILE}/{specir_id}"
 
         conn.execute(
             "INSERT OR REPLACE INTO specifications "
             "(identifier, root_path, long_name, type_ref, pid) "
             "VALUES (?, ?, ?, ?, ?)",
-            (specir_id, _FROM_FILE, spec.long_name, type_ref, None),
+            (specir_id, root_path, spec.long_name, type_ref, None),
         )
         id_map.put("specifications", specir_id, spec.identifier)
         spec_map[spec.identifier] = specir_id
@@ -293,17 +298,17 @@ def _import_objects_and_hierarchy(
     attr_def_name_map: Dict[str, str],
     attr_def_prim_map: Dict[str, str],
     id_map: IdMap,
-) -> Tuple[Dict[str, int], Dict[int, str]]:
+) -> Tuple[Dict[str, Dict[str, int]], Dict[int, str]]:
     """Insert spec_objects and attribute values.
 
     Returns
     -------
-    obj_id_map : dict
-        ReqIF object identifier → SpecIR rowid.
+    obj_id_map_by_spec : dict
+        SpecIR specification identifier → ReqIF object identifier → SpecIR rowid.
     rowid_to_reqif : dict
         SpecIR rowid → ReqIF object identifier (for deferred id_map population).
     """
-    obj_id_map: Dict[str, int] = {}
+    obj_id_map_by_spec: Dict[str, Dict[str, int]] = {}
     rowid_to_reqif: Dict[int, str] = {}
 
     # Build a lookup: reqif_obj_id → ReqIFSpecObject
@@ -324,6 +329,7 @@ def _import_objects_and_hierarchy(
         specir_spec_id = spec_map.get(spec.identifier)
         if not specir_spec_id:
             continue
+        obj_id_map_by_spec.setdefault(specir_spec_id, {})
 
         # Walk hierarchy to determine ordering and levels.
         hier_entries = _walk_hierarchy_dfs(spec.children, 1, [0])
@@ -348,7 +354,7 @@ def _import_objects_and_hierarchy(
                 (specir_spec_id, specir_type, _FROM_FILE, file_seq, pid, title, level, content_xhtml),
             )
             specir_obj_id = cursor.lastrowid
-            obj_id_map[obj.identifier] = specir_obj_id
+            obj_id_map_by_spec[specir_spec_id][obj.identifier] = specir_obj_id
             rowid_to_reqif[specir_obj_id] = obj.identifier
 
             # Custom attributes (non-core)
@@ -363,7 +369,7 @@ def _import_objects_and_hierarchy(
                     attr.value, primitive, attr.attribute_type, enum_rev,
                 )
 
-    return obj_id_map, rowid_to_reqif
+    return obj_id_map_by_spec, rowid_to_reqif
 
 
 def _normalize_string(s: str) -> str:
@@ -441,17 +447,29 @@ def _insert_attribute_value(
 def _import_relations(
     conn: sqlite3.Connection,
     relations: List[ReqIFSpecRelation],
-    obj_id_map: Dict[str, int],
+    obj_id_map_by_spec: Dict[str, Dict[str, int]],
     rel_type_map: Dict[str, str],
-    spec_id: str,
     id_map: IdMap,
 ) -> None:
-    """Insert spec_relations from ReqIF relations."""
+    """Insert spec_relations from ReqIF relations.
+
+    Source and target are resolved against every imported object, so a relation
+    whose endpoints live in different specifications is stored once, owned by
+    the source object's specification, instead of being dropped.
+    """
+    # Global ReqIF object id -> (specir object id, owning specification).
+    global_obj_map: Dict[str, Tuple[int, str]] = {}
+    for spec_id, obj_id_map in obj_id_map_by_spec.items():
+        for reqif_obj_id, specir_obj_id in obj_id_map.items():
+            global_obj_map.setdefault(reqif_obj_id, (specir_obj_id, spec_id))
+
     for rel in relations:
-        source_specir = obj_id_map.get(rel.source)
-        target_specir = obj_id_map.get(rel.target)
-        if source_specir is None or target_specir is None:
+        source = global_obj_map.get(rel.source)
+        target = global_obj_map.get(rel.target)
+        if source is None or target is None:
             continue
+        source_specir, source_spec_id = source
+        target_specir, _ = target
 
         type_ref = rel_type_map.get(rel.relation_type_ref)
 
@@ -460,7 +478,7 @@ def _import_relations(
             "(specification_ref, source_object_id, target_text, target_object_id, "
             " type_ref, from_file, link_selector) "
             "VALUES (?, ?, ?, ?, ?, ?, ?)",
-            (spec_id, source_specir, rel.target, target_specir, type_ref, _FROM_FILE, "@"),
+            (source_spec_id, source_specir, rel.target, target_specir, type_ref, _FROM_FILE, "@"),
         )
         id_map.put("spec_relations", str(cursor.lastrowid), rel.identifier)
 
@@ -587,8 +605,9 @@ def import_reqif(
     conn : sqlite3.Connection
         Open SQLite connection.  Schema is created if needed.
     spec_slug : str, optional
-        Override the specification identifier.  When *None*, derived from
-        the first specification's ``long_name``.
+        Override the specification identifier for a single-specification import.
+        Multi-specification ReqIF imports derive identifiers from each
+        specification's ``long_name``.
 
     Returns
     -------
@@ -620,32 +639,33 @@ def import_reqif(
         conn, specifications, spec_type_map, id_map, spec_slug,
     )
 
-    obj_id_map, rowid_to_reqif = _import_objects_and_hierarchy(
+    obj_id_map_by_spec, rowid_to_reqif = _import_objects_and_hierarchy(
         conn, bundle, specifications, spec_map,
         obj_type_map, attr_def_name_map, attr_def_prim_map, id_map,
     )
 
-    # Use the first specification identifier for relations and finalization.
+    # Return the first specification identifier for backward compatibility.
     specir_spec_id = next(iter(spec_map.values())) if spec_map else "imported"
 
     _import_relations(
-        conn, content.spec_relations or [], obj_id_map, rel_type_map,
-        specir_spec_id, id_map,
+        conn, content.spec_relations or [], obj_id_map_by_spec, rel_type_map, id_map,
     )
 
     # Stage 3 — finalize PIDs and populate id_map with PID keys.
-    _finalize_pids_and_labels(
-        conn, specir_spec_id,
-        id_map=id_map, rowid_to_reqif=rowid_to_reqif,
-    )
+    for current_spec_id in spec_map.values():
+        _finalize_pids_and_labels(
+            conn, current_spec_id,
+            id_map=id_map, rowid_to_reqif=rowid_to_reqif,
+        )
 
     # Fix target_text to store the target's PID (not the raw ReqIF UUID).
-    conn.execute(
-        "UPDATE spec_relations SET target_text = "
-        "(SELECT pid FROM spec_objects WHERE id = spec_relations.target_object_id) "
-        "WHERE specification_ref = ? AND target_object_id IS NOT NULL",
-        (specir_spec_id,),
-    )
+    for current_spec_id in spec_map.values():
+        conn.execute(
+            "UPDATE spec_relations SET target_text = "
+            "(SELECT pid FROM spec_objects WHERE id = spec_relations.target_object_id) "
+            "WHERE specification_ref = ? AND target_object_id IS NOT NULL",
+            (current_spec_id,),
+        )
 
     conn.commit()
     return specir_spec_id

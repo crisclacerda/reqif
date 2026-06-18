@@ -186,22 +186,22 @@ class TestCommonSpecTC1000(unittest.TestCase):
         self.assertIn("> TC1000F: false", self.md)
 
     def test_integer_attr(self):
-        self.assertIn("> TC1000 Integer: 5000", self.md)
+        self.assertIn("> TC1000_Integer: 5000", self.md)
 
     def test_string_attr(self):
-        self.assertIn("> TC1000 String: Plain", self.md)
+        self.assertIn("> TC1000_String: Plain", self.md)
 
     def test_real_attr(self):
-        self.assertIn("> TC1000 Real: 1234.5", self.md)
+        self.assertIn("> TC1000_Real: 1234.5", self.md)
 
     def test_date_attr(self):
         # Date value from fixture: 2002-05-30T09:30:10.000+06:00
-        lines = [l for l in self.md.split("\n") if l.startswith("> TC1000 Date:")]
+        lines = [l for l in self.md.split("\n") if l.startswith("> TC1000_Date:")]
         self.assertGreater(len(lines), 0, "Expected date attribute line")
         self.assertIn("2002-05-30", lines[0])
 
     def test_enum_attr(self):
-        self.assertIn("> TC1000 Enum: TC1000 Yellow", self.md)
+        self.assertIn("> TC1000_Enum: TC1000 Yellow", self.md)
 
     def test_attr_lines_use_blockquote_syntax(self):
         """All attribute lines should match > name: value."""
@@ -246,8 +246,8 @@ class TestCommonSpecTC1300(unittest.TestCase):
             self.assertIn(target, pids_in_headings, f"Relation target {target} not found in headings")
 
     def test_string_attrs(self):
-        self.assertIn("> TC1300 String: Requirement 1", self.md)
-        self.assertIn("> TC1300 String: Requirement 2", self.md)
+        self.assertIn("> TC1300_String: Requirement 1", self.md)
+        self.assertIn("> TC1300_String: Requirement 2", self.md)
 
 
 class TestCommonSpecMultiFile(unittest.TestCase):

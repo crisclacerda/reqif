@@ -11,6 +11,9 @@ import tempfile
 import unittest
 from xml.etree import ElementTree
 
+from reqif.specir.tests.test_specir import _make_multi_spec_bundle
+from reqif.unparser import ReqIFUnparser
+
 _FIXTURES_DIR = os.path.join(os.path.dirname(__file__), "fixtures")
 _TC1000 = os.path.join(_FIXTURES_DIR, "tc1000_simple_content.reqif")
 _TC1300 = os.path.join(_FIXTURES_DIR, "tc1300_spec_relation.reqif")
@@ -87,6 +90,65 @@ class TestCLI(unittest.TestCase):
             r = _run(["decompile", "--db", db, "--output-dir", project_dir, "--overwrite"])
             self.assertEqual(r.returncode, 0, f"Decompile failed: {r.stderr}")
             self.assertTrue(os.path.exists(os.path.join(project_dir, "project.yaml")))
+
+    def test_multi_spec_requires_all_for_bundle_operations(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            reqif_path = os.path.join(tmp, "multi.reqif")
+            db = os.path.join(tmp, "multi.db")
+            exported = os.path.join(tmp, "exported.reqif")
+            project_dir = os.path.join(tmp, "project")
+
+            with open(reqif_path, "w", encoding="utf-8") as f:
+                f.write(ReqIFUnparser.unparse(_make_multi_spec_bundle()))
+
+            r = _run(["import", "--input", reqif_path, "--db", db])
+            self.assertEqual(r.returncode, 0, f"Import failed: {r.stderr}")
+            self.assertIn("Specifications: test-sdd, test-srs", r.stdout)
+
+            conn = sqlite3.connect(db)
+            try:
+                specs = [
+                    row[0] for row in conn.execute(
+                        "SELECT identifier FROM specifications ORDER BY identifier"
+                    )
+                ]
+            finally:
+                conn.close()
+            self.assertEqual(specs, ["test-sdd", "test-srs"])
+
+            r = _run(["export", "--db", db, "--output", exported])
+            self.assertEqual(r.returncode, 2)
+            self.assertIn("multiple specifications", r.stderr)
+
+            r = _run(["export", "--db", db, "--output", exported, "--all"])
+            self.assertEqual(r.returncode, 0, f"Export --all failed: {r.stderr}")
+            bundle_root = ElementTree.fromstring(open(exported, encoding="utf-8").read())
+            self.assertIsNotNone(bundle_root)
+
+            r = _run([
+                "import-decompile",
+                "--input", reqif_path,
+                "--output-dir", project_dir,
+                "--overwrite",
+            ])
+            self.assertEqual(r.returncode, 2)
+            self.assertIn("Use --all", r.stderr)
+
+            r = _run([
+                "import-decompile",
+                "--input", reqif_path,
+                "--output-dir", project_dir,
+                "--all",
+                "--overwrite",
+            ])
+            self.assertEqual(r.returncode, 0, f"import-decompile --all failed: {r.stderr}")
+            md_files = [f for f in os.listdir(project_dir) if f.endswith(".md")]
+            self.assertEqual(sorted(md_files), ["test-sdd.md", "test-srs.md"])
+            with open(os.path.join(project_dir, "project.yaml"), encoding="utf-8") as f:
+                project_yaml = f.read()
+            self.assertIn("  - test-sdd.md", project_yaml)
+            self.assertIn("  - test-srs.md", project_yaml)
+            self.assertIn("path: docx/{spec_id}.docx", project_yaml)
 
 
 if __name__ == "__main__":

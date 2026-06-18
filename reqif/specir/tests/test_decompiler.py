@@ -50,10 +50,11 @@ class TestModelGenerator(unittest.TestCase):
             lua_path = os.path.join(obj_dir, lua_files[0])
             with open(lua_path) as f:
                 content = f.read()
-            self.assertIn("M.object", content)
+            self.assertIn('kind = "object"', content)
+            self.assertIn("schema =", content)
             self.assertIn("id =", content)
             self.assertIn("attributes =", content)
-            self.assertIn("return M", content)
+            self.assertIn("return {", content)
         conn.close()
 
     def test_tc1000_generates_specification_type(self):
@@ -66,7 +67,7 @@ class TestModelGenerator(unittest.TestCase):
                 for lf in lua_files:
                     with open(os.path.join(spec_dir, lf)) as f:
                         content = f.read()
-                    self.assertIn("M.specification", content)
+                    self.assertIn('kind = "specification"', content)
         conn.close()
 
     def test_tc1300_generates_relation_type(self):
@@ -79,8 +80,44 @@ class TestModelGenerator(unittest.TestCase):
             self.assertGreater(len(lua_files), 0, "No relation type Lua files generated")
             with open(os.path.join(rel_dir, lua_files[0])) as f:
                 content = f.read()
-            self.assertIn("M.relation", content)
+            self.assertIn('kind = "relation"', content)
             self.assertIn('extends = "PID_REF"', content)
+        conn.close()
+
+    def test_base_model_manifest_and_docx_forwards(self):
+        conn, _ = _import_fixture(_TC1300)
+        with tempfile.TemporaryDirectory() as tmp:
+            model_dir = generate_model(
+                conn,
+                tmp,
+                "imported_abnt",
+                requires_models=["abnt"],
+                forward_model_assets_from="abnt",
+                style="academico",
+            )
+
+            with open(os.path.join(model_dir, "model.yaml")) as f:
+                manifest = f.read()
+            self.assertIn("name: imported_abnt", manifest)
+            self.assertIn("requires: [abnt]", manifest)
+
+            expected_files = [
+                (
+                    os.path.join("filters", "docx.lua"),
+                    'models/abnt/filters/docx.lua',
+                ),
+                (
+                    os.path.join("postprocessors", "docx.lua"),
+                    'pcall(require, "models.abnt.postprocessors.docx")',
+                ),
+                (
+                    os.path.join("styles", "academico", "preset.lua"),
+                    'template = "abnt"',
+                ),
+            ]
+            for rel_path, expected in expected_files:
+                with open(os.path.join(model_dir, rel_path)) as f:
+                    self.assertIn(expected, f.read())
         conn.close()
 
     def test_tc1000_enum_values_in_lua(self):
@@ -260,6 +297,17 @@ class TestProjectGenerator(unittest.TestCase):
                 content = f.read()
             self.assertIn("main.md", content)
             self.assertIn("appendix.md", content)
+        conn.close()
+
+    def test_uses_style(self):
+        conn, spec_id = _import_fixture(_TC1000)
+        with tempfile.TemporaryDirectory() as tmp:
+            generate_project(conn, spec_id, tmp, style="academico")
+            with open(os.path.join(tmp, "project.yaml")) as f:
+                content = f.read()
+            self.assertIn("style: academico", content)
+            self.assertIn("path: docx/", content)
+            self.assertNotIn("path: build/docx/", content)
         conn.close()
 
     def test_overwrite_protection(self):

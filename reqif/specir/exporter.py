@@ -239,7 +239,11 @@ def _build_hierarchy(objects: list) -> List[Tuple[Any, list]]:
 # ── Public API ───────────────────────────────────────────────────────────
 
 def export_reqif(conn: sqlite3.Connection, spec_id: str) -> ReqIFBundle:
-    """Export a specification from SpecIR to a ReqIFBundle.
+    """Export a single specification from SpecIR to a ReqIFBundle.
+
+    A single specification is the one-element case of
+    :func:`export_reqif_multi`; both share the same builder so a single export
+    cannot diverge from a multi-specification export.
 
     Parameters
     ----------
@@ -253,55 +257,20 @@ def export_reqif(conn: sqlite3.Connection, spec_id: str) -> ReqIFBundle:
     ReqIFBundle
         Ready for serialization via ``ReqIFUnparser.unparse()``.
     """
-    id_map = IdMap(conn)
-    now = _now()
+    return export_reqif_multi(conn, [spec_id])
+
+
+def _build_specification(
+    conn: sqlite3.Connection,
+    spec_id: str,
+    objects: list,
+    object_id_by_sd_id: Dict[str, str],
+    spec_type: ReqIFSpecificationType,
+    id_map: IdMap,
+    now: str,
+) -> ReqIFSpecification:
+    """Build the ReqIFSpecification (hierarchy) for one specification."""
     spec_title = _get_spec_title(conn, spec_id)
-
-    # ── data types ──
-    datatype_types = _load_datatype_definitions(conn)
-    enum_values_by_dt = _load_enum_values(conn)
-
-    reqif_datatypes: Dict[str, Any] = {}
-    for dt_id, primitive in sorted(datatype_types.items()):
-        reqif_id = id_map.ensure_reqif_id("datatype_definitions", dt_id, "DT")
-        reqif_datatypes[dt_id] = _make_datatype(
-            reqif_id, dt_id, primitive, now, enum_values_by_dt, id_map,
-        )
-
-    # Ensure core datatypes.
-    for core in ("STRING", "XHTML"):
-        if core not in reqif_datatypes:
-            reqif_id = id_map.ensure_reqif_id("datatype_definitions", core, "DT")
-            reqif_datatypes[core] = _make_datatype(
-                reqif_id, core, core, now, enum_values_by_dt, id_map,
-            )
-
-    # ── core attribute definitions (ForeignID, Name, Text) ──
-    core_defs = _make_core_attribute_defs(reqif_datatypes, id_map)
-
-    # ── object types + per-type attribute defs ──
-    object_types = _load_object_types(conn)
-    attribute_types_rows = _load_attribute_types(conn)
-    attr_values_by_owner = _load_attribute_values(conn, spec_id)
-
-    reqif_attr_defs_by_owner, reqif_spec_object_types = _build_object_types(
-        object_types, attribute_types_rows, datatype_types,
-        reqif_datatypes, core_defs, id_map, now,
-    )
-
-    # ── spec objects + hierarchy ──
-    objects = _load_spec_objects(conn, spec_id)
-    floats_by_parent = _load_floats_by_parent(conn, spec_id)
-    (
-        reqif_objects,
-        reqif_object_id_by_sd_id,
-    ) = _build_spec_objects(
-        objects, reqif_spec_object_types, core_defs,
-        reqif_attr_defs_by_owner, attr_values_by_owner,
-        enum_values_by_dt, datatype_types, id_map, now,
-        floats_by_parent,
-    )
-
     hierarchy_tree = _build_hierarchy(objects)
 
     def make_hierarchy_nodes(nodes):
@@ -319,7 +288,7 @@ def export_reqif(conn: sqlite3.Connection, spec_id: str) -> ReqIFBundle:
                     ),
                     last_change=now,
                     long_name=None,
-                    spec_object=reqif_object_id_by_sd_id[sd_id],
+                    spec_object=object_id_by_sd_id[sd_id],
                     children=make_hierarchy_nodes(children),
                     ref_then_children_order=True,
                     level=hier_level,
@@ -327,6 +296,80 @@ def export_reqif(conn: sqlite3.Connection, spec_id: str) -> ReqIFBundle:
             )
         return out
 
+    return ReqIFSpecification(
+        identifier=id_map.ensure_reqif_id("specifications", spec_id, "S"),
+        last_change=now,
+        long_name=spec_title,
+        values=[],
+        specification_type=spec_type.identifier,
+        children=make_hierarchy_nodes(hierarchy_tree),
+    )
+
+
+def _merge_by_identifier(items: List[Any]) -> List[Any]:
+    merged: Dict[str, Any] = {}
+    for item in items:
+        identifier = getattr(item, "identifier", None)
+        if identifier is None or identifier not in merged:
+            merged[identifier] = item
+    return list(merged.values())
+
+
+def _merge_relations(relations: List[ReqIFSpecRelation]) -> List[ReqIFSpecRelation]:
+    merged: Dict[Tuple[str, str, str], ReqIFSpecRelation] = {}
+    for relation in relations:
+        key = (
+            relation.source,
+            relation.target,
+            relation.relation_type_ref,
+        )
+        if key not in merged:
+            merged[key] = relation
+    return list(merged.values())
+
+
+def export_reqif_multi(conn: sqlite3.Connection, spec_ids: List[str]) -> ReqIFBundle:
+    """Export one or more SpecIR specifications to a single ReqIFBundle.
+
+    This is the only export path; a single specification is just the
+    one-element case.  Data types and types are database-global, the objects of
+    every specification populate one shared id map, and relations are resolved
+    against that map -- so relations that span specifications are preserved
+    instead of being dropped per specification.
+    """
+    if not spec_ids:
+        raise ValueError("export_reqif_multi requires at least one specification")
+
+    id_map = IdMap(conn)
+    now = _now()
+
+    # ── data types (database-global) ──
+    datatype_types = _load_datatype_definitions(conn)
+    enum_values_by_dt = _load_enum_values(conn)
+
+    reqif_datatypes: Dict[str, Any] = {}
+    for dt_id, primitive in sorted(datatype_types.items()):
+        reqif_id = id_map.ensure_reqif_id("datatype_definitions", dt_id, "DT")
+        reqif_datatypes[dt_id] = _make_datatype(
+            reqif_id, dt_id, primitive, now, enum_values_by_dt, id_map,
+        )
+    for core in ("STRING", "XHTML"):
+        if core not in reqif_datatypes:
+            reqif_id = id_map.ensure_reqif_id("datatype_definitions", core, "DT")
+            reqif_datatypes[core] = _make_datatype(
+                reqif_id, core, core, now, enum_values_by_dt, id_map,
+            )
+
+    # ── core attribute definitions + object types (database-global) ──
+    core_defs = _make_core_attribute_defs(reqif_datatypes, id_map)
+    object_types = _load_object_types(conn)
+    attribute_types_rows = _load_attribute_types(conn)
+    reqif_attr_defs_by_owner, reqif_spec_object_types = _build_object_types(
+        object_types, attribute_types_rows, datatype_types,
+        reqif_datatypes, core_defs, id_map, now,
+    )
+
+    # ── one shared specification type ──
     spec_type = ReqIFSpecificationType(
         identifier=id_map.ensure_reqif_id(
             "spec_specification_types", "SpecCompiler.SpecificationType", "ST",
@@ -338,16 +381,29 @@ def export_reqif(conn: sqlite3.Connection, spec_id: str) -> ReqIFBundle:
         is_self_closed=True,
     )
 
-    specification = ReqIFSpecification(
-        identifier=id_map.ensure_reqif_id("specifications", spec_id, "S"),
-        last_change=now,
-        long_name=spec_title,
-        values=[],
-        specification_type=spec_type.identifier,
-        children=make_hierarchy_nodes(hierarchy_tree),
-    )
+    # ── objects + specifications, accumulating a global object id map ──
+    global_object_id_by_sd_id: Dict[str, str] = {}
+    all_objects: List[ReqIFSpecObject] = []
+    specifications: List[ReqIFSpecification] = []
+    for spec_id in spec_ids:
+        objects = _load_spec_objects(conn, spec_id)
+        floats_by_parent = _load_floats_by_parent(conn, spec_id)
+        attr_values_by_owner = _load_attribute_values(conn, spec_id)
+        reqif_objects, object_id_by_sd_id = _build_spec_objects(
+            objects, reqif_spec_object_types, core_defs,
+            reqif_attr_defs_by_owner, attr_values_by_owner,
+            enum_values_by_dt, datatype_types, id_map, now,
+            floats_by_parent,
+        )
+        all_objects.extend(reqif_objects)
+        global_object_id_by_sd_id.update(object_id_by_sd_id)
+        specifications.append(
+            _build_specification(
+                conn, spec_id, objects, object_id_by_sd_id, spec_type, id_map, now,
+            )
+        )
 
-    # ── relation types + relations ──
+    # ── relation types (database-global) ──
     relation_types = _load_relation_types(conn)
     reqif_relation_types: Dict[str, ReqIFSpecRelationType] = {}
     for rel_id, rel in relation_types.items():
@@ -359,14 +415,19 @@ def export_reqif(conn: sqlite3.Connection, spec_id: str) -> ReqIFBundle:
             is_self_closed=True,
             attribute_definitions=None,
         )
-
     default_rel = sorted(relation_types.keys())[0] if relation_types else None
-    reqif_relations = _build_relations(
-        conn, spec_id, reqif_relation_types, reqif_object_id_by_sd_id,
-        default_rel, id_map, now,
-    )
 
-    # ── assemble bundle ──
+    # ── relations resolved against the global object map (cross-spec safe) ──
+    all_relations: List[ReqIFSpecRelation] = []
+    for spec_id in spec_ids:
+        all_relations.extend(_build_relations(
+            conn, spec_id, reqif_relation_types, global_object_id_by_sd_id,
+            default_rel, id_map, now,
+        ))
+
+    # ── assemble one bundle ──
+    title = ", ".join(_get_spec_title(conn, spec_id) for spec_id in spec_ids)
+
     reqif_content = ReqIFReqIFContent(
         data_types=list(reqif_datatypes.values()),
         spec_types=[
@@ -374,22 +435,22 @@ def export_reqif(conn: sqlite3.Connection, spec_id: str) -> ReqIFBundle:
             *reqif_spec_object_types.values(),
             *reqif_relation_types.values(),
         ],
-        spec_objects=reqif_objects,
-        spec_relations=reqif_relations,
-        specifications=[specification],
+        spec_objects=_merge_by_identifier(all_objects),
+        spec_relations=_merge_relations(all_relations),
+        specifications=specifications,
         spec_relation_groups=[],
     )
 
     return ReqIFBundle(
         namespace_info=ReqIFNamespaceInfo.create_default(),
         req_if_header=ReqIFReqIFHeader(
-            identifier=id_map.ensure_reqif_id("reqif_header", spec_id, "HDR"),
+            identifier=id_map.ensure_reqif_id("reqif_header", spec_ids[0], "HDR"),
             creation_time=now,
             repository_id="speccompiler",
             req_if_tool_id="speccompiler",
             req_if_version="1.0",
             source_tool_id="speccompiler",
-            title=f"SpecCompiler export: {spec_title}",
+            title=f"SpecCompiler export: {title}",
         ),
         core_content=ReqIFCoreContent(req_if_content=reqif_content),
         tool_extensions_tag_exists=False,

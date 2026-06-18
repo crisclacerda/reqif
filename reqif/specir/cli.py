@@ -3,9 +3,9 @@
 Usage::
 
     python -m reqif.specir import --input file.reqif --db specir.db [--spec-id slug]
-    python -m reqif.specir export --db specir.db --output file.reqif [--spec-id slug]
-    python -m reqif.specir decompile --db specir.db --output-dir ./project [--spec-id slug]
-    python -m reqif.specir import-decompile --input file.reqif --output-dir ./project [--spec-id slug]
+    python -m reqif.specir export --db specir.db --output file.reqif [--spec-id slug|--all]
+    python -m reqif.specir decompile --db specir.db --output-dir ./project [--spec-id slug|--all]
+    python -m reqif.specir import-decompile --input file.reqif --output-dir ./project [--all]
 """
 from __future__ import annotations
 
@@ -30,22 +30,33 @@ def _cmd_import(args: argparse.Namespace) -> int:
 
     conn = sqlite3.connect(db_path)
     try:
-        spec_id = import_reqif(bundle, conn, spec_slug=args.spec_id)
+        try:
+            spec_id = import_reqif(bundle, conn, spec_slug=args.spec_id)
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        spec_ids = _list_spec_ids(conn)
         print(f"Imported into: {db_path}")
         print(f"Specification: {spec_id}")
+        if len(spec_ids) > 1:
+            print(f"Specifications: {', '.join(spec_ids)}")
     finally:
         conn.close()
     return 0
+
+
+def _list_spec_ids(conn: sqlite3.Connection) -> list[str]:
+    rows = conn.execute(
+        "SELECT identifier FROM specifications ORDER BY identifier"
+    ).fetchall()
+    return [str(r[0]) for r in rows]
 
 
 def _resolve_spec_id(conn: sqlite3.Connection, spec_id: str | None) -> str | None:
     """Resolve spec_id: return it if given, auto-detect if single spec, else error."""
     if spec_id is not None:
         return spec_id
-    rows = conn.execute(
-        "SELECT identifier FROM specifications ORDER BY identifier"
-    ).fetchall()
-    ids = [str(r[0]) for r in rows]
+    ids = _list_spec_ids(conn)
     if not ids:
         print("error: no specifications found in DB.", file=sys.stderr)
         return None
@@ -58,10 +69,28 @@ def _resolve_spec_id(conn: sqlite3.Connection, spec_id: str | None) -> str | Non
     return ids[0]
 
 
+def _resolve_spec_ids(
+    conn: sqlite3.Connection,
+    spec_id: str | None,
+    all_specs: bool,
+) -> list[str] | None:
+    if all_specs and spec_id is not None:
+        print("error: use either --all or --spec-id, not both.", file=sys.stderr)
+        return None
+    if all_specs:
+        ids = _list_spec_ids(conn)
+        if not ids:
+            print("error: no specifications found in DB.", file=sys.stderr)
+            return None
+        return ids
+    resolved = _resolve_spec_id(conn, spec_id)
+    return [resolved] if resolved is not None else None
+
+
 def _cmd_export(args: argparse.Namespace) -> int:
     from reqif.unparser import ReqIFUnparser
 
-    from .exporter import export_reqif
+    from .exporter import export_reqif_multi
 
     db_path = os.path.abspath(args.db)
     out_path = os.path.abspath(args.output)
@@ -70,11 +99,11 @@ def _cmd_export(args: argparse.Namespace) -> int:
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     try:
-        spec_id = _resolve_spec_id(conn, args.spec_id)
-        if spec_id is None:
+        spec_ids = _resolve_spec_ids(conn, args.spec_id, args.all)
+        if spec_ids is None:
             return 2
 
-        bundle = export_reqif(conn, spec_id)
+        bundle = export_reqif_multi(conn, spec_ids)
     finally:
         conn.close()
 
@@ -83,7 +112,7 @@ def _cmd_export(args: argparse.Namespace) -> int:
         f.write(xml)
 
     print(f"Wrote ReqIF: {out_path}")
-    print(f"Specification: {spec_id}")
+    print(f"Specifications: {', '.join(spec_ids)}")
     return 0
 
 
@@ -95,24 +124,36 @@ def _cmd_decompile(args: argparse.Namespace) -> int:
     db_path = os.path.abspath(args.db)
     out_dir = os.path.abspath(args.output_dir)
     model_name = args.model_name
+    requires_models = list(args.requires_model or [])
+    if args.base_model and args.base_model not in requires_models:
+        requires_models.append(args.base_model)
 
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     try:
-        spec_id = _resolve_spec_id(conn, args.spec_id)
-        if spec_id is None:
+        spec_ids = _resolve_spec_ids(conn, args.spec_id, args.all)
+        if spec_ids is None:
             return 2
 
         # Generate Lua model types.
-        model_dir = generate_model(conn, out_dir, model_name)
+        model_dir = generate_model(
+            conn,
+            out_dir,
+            model_name,
+            requires_models=requires_models,
+            forward_model_assets_from=args.base_model,
+            style=args.style,
+        )
         print(f"Model types: {model_dir}")
 
         # Generate CommonSpec markdown.
-        md_files = decompile(
-            conn, spec_id, out_dir,
-            children_threshold=args.threshold,
-            overwrite=args.overwrite,
-        )
+        md_files = []
+        for spec_id in spec_ids:
+            md_files.extend(decompile(
+                conn, spec_id, out_dir,
+                children_threshold=args.threshold,
+                overwrite=args.overwrite,
+            ))
         for f in md_files:
             print(f"Wrote: {f}")
 
@@ -121,8 +162,9 @@ def _cmd_decompile(args: argparse.Namespace) -> int:
         # Only list root files (not child includes) in doc_files.
         root_files = [f for f in doc_files if os.sep not in f and "/" not in f]
         proj_path = generate_project(
-            conn, spec_id, out_dir,
+            conn, spec_ids[0], out_dir,
             model_name=model_name,
+            style=args.style,
             doc_files=root_files or doc_files,
             overwrite=args.overwrite,
         )
@@ -144,38 +186,69 @@ def _cmd_import_decompile(args: argparse.Namespace) -> int:
     out_dir = os.path.abspath(args.output_dir)
     model_name = args.model_name
     db_path = os.path.join(out_dir, ".specir.db")
+    requires_models = list(args.requires_model or [])
+    if args.base_model and args.base_model not in requires_models:
+        requires_models.append(args.base_model)
 
     # Parse ReqIF.
     bundle = ReqIFParser.parse(input_path)
     if bundle.exceptions:
         for exc in bundle.exceptions:
             print(f"warning: {exc}", file=sys.stderr)
+    input_specs = bundle.core_content.req_if_content.specifications or []
+    if args.spec_id and len(input_specs) > 1:
+        print(
+            "error: --spec-id can only override single-specification ReqIF imports.",
+            file=sys.stderr,
+        )
+        return 2
+    if len(input_specs) > 1 and not args.all:
+        print(
+            "error: ReqIF contains multiple specifications. Use --all to decompile all of them.",
+            file=sys.stderr,
+        )
+        return 2
 
     # Import into SpecIR.
     os.makedirs(out_dir, exist_ok=True)
     conn = sqlite3.connect(db_path)
     conn.row_factory = sqlite3.Row
     try:
-        spec_id = import_reqif(bundle, conn, spec_slug=args.spec_id)
+        try:
+            spec_id = import_reqif(bundle, conn, spec_slug=args.spec_id)
+        except ValueError as exc:
+            print(f"error: {exc}", file=sys.stderr)
+            return 2
+        spec_ids = _list_spec_ids(conn) if args.all else [spec_id]
         print(f"Imported: {spec_id}")
 
         # Generate model + markdown + project.
-        model_dir = generate_model(conn, out_dir, model_name)
+        model_dir = generate_model(
+            conn,
+            out_dir,
+            model_name,
+            requires_models=requires_models,
+            forward_model_assets_from=args.base_model,
+            style=args.style,
+        )
         print(f"Model types: {model_dir}")
 
-        md_files = decompile(
-            conn, spec_id, out_dir,
-            children_threshold=args.threshold,
-            overwrite=args.overwrite,
-        )
+        md_files = []
+        for current_spec_id in spec_ids:
+            md_files.extend(decompile(
+                conn, current_spec_id, out_dir,
+                children_threshold=args.threshold,
+                overwrite=args.overwrite,
+            ))
         for f in md_files:
             print(f"Wrote: {f}")
 
         doc_files = [os.path.relpath(f, out_dir) for f in md_files if f.endswith(".md")]
         root_files = [f for f in doc_files if os.sep not in f and "/" not in f]
         proj_path = generate_project(
-            conn, spec_id, out_dir,
+            conn, spec_ids[0], out_dir,
             model_name=model_name,
+            style=args.style,
             doc_files=root_files or doc_files,
             overwrite=args.overwrite,
         )
@@ -203,13 +276,31 @@ def main() -> int:
     p_export.add_argument("--db", required=True, help="Path to SpecIR SQLite database")
     p_export.add_argument("--output", required=True, help="Output .reqif file path")
     p_export.add_argument("--spec-id", default=None, help="Specification identifier to export")
+    p_export.add_argument("--all", action="store_true", help="Export all specifications")
 
     # decompile
     p_decompile = sub.add_parser("decompile", help="Decompile SpecIR into a CommonSpec project")
     p_decompile.add_argument("--db", required=True, help="Path to SpecIR SQLite database")
     p_decompile.add_argument("--output-dir", required=True, help="Output project directory")
     p_decompile.add_argument("--spec-id", default=None, help="Specification identifier")
+    p_decompile.add_argument("--all", action="store_true", help="Decompile all specifications")
     p_decompile.add_argument("--model-name", default="imported", help="Model name (default: imported)")
+    p_decompile.add_argument(
+        "--requires-model",
+        action="append",
+        default=[],
+        help="Model to load before the generated model; can be repeated",
+    )
+    p_decompile.add_argument(
+        "--base-model",
+        default=None,
+        help="Base model to require and forward DOCX assets/styles from",
+    )
+    p_decompile.add_argument(
+        "--style",
+        default=None,
+        help="DOCX style preset to write into project.yaml",
+    )
     p_decompile.add_argument("--threshold", type=int, default=50, help="Object count threshold for file splitting")
     p_decompile.add_argument("--overwrite", action="store_true", help="Overwrite existing files")
 
@@ -218,7 +309,24 @@ def main() -> int:
     p_id.add_argument("--input", required=True, help="Path to .reqif file")
     p_id.add_argument("--output-dir", required=True, help="Output project directory")
     p_id.add_argument("--spec-id", default=None, help="Override the specification identifier")
+    p_id.add_argument("--all", action="store_true", help="Decompile all ReqIF specifications")
     p_id.add_argument("--model-name", default="imported", help="Model name (default: imported)")
+    p_id.add_argument(
+        "--requires-model",
+        action="append",
+        default=[],
+        help="Model to load before the generated model; can be repeated",
+    )
+    p_id.add_argument(
+        "--base-model",
+        default=None,
+        help="Base model to require and forward DOCX assets/styles from",
+    )
+    p_id.add_argument(
+        "--style",
+        default=None,
+        help="DOCX style preset to write into project.yaml",
+    )
     p_id.add_argument("--threshold", type=int, default=50, help="Object count threshold for file splitting")
     p_id.add_argument("--overwrite", action="store_true", help="Overwrite existing files")
 

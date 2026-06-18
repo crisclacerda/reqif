@@ -20,6 +20,7 @@ def generate_project(
     spec_id: str,
     output_dir: str,
     model_name: str = "imported",
+    style: Optional[str] = None,
     doc_files: Optional[List[str]] = None,
     overwrite: bool = False,
 ) -> str:
@@ -35,6 +36,8 @@ def generate_project(
         Directory where ``project.yaml`` is written.
     model_name : str
         Model template name (default: ``"imported"``).
+    style : str, optional
+        DOCX style preset name.
     doc_files : list[str], optional
         Explicit doc file list. If None, auto-detected from spec.
     overwrite : bool
@@ -59,6 +62,7 @@ def generate_project(
         doc_files = [f"{spec_slug}.md"]
 
     doc_files_yaml = "\n".join(f"  - {f}" for f in doc_files)
+    style_yaml = f"style: {style}\n" if style else ""
 
     content = f"""\
 # Generated from ReqIF import
@@ -67,7 +71,7 @@ project:
   name: {long_name}
 
 template: {model_name}
-
+{style_yaml}
 output_dir: build/
 
 doc_files:
@@ -75,9 +79,9 @@ doc_files:
 
 outputs:
   - format: docx
-    path: build/docx/{spec_id}.docx
+    path: docx/{{spec_id}}.docx
   - format: html5
-    path: build/www/{spec_id}.html
+    path: www/{{spec_id}}.html
 
 html5:
   number_sections: true

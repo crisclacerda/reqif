@@ -161,6 +161,12 @@ python -m reqif.specir import \
   --spec-id imported_requirements
 ```
 
+This is a database-only operation. It creates a queryable/round-trippable
+SpecIR SQLite database, but it does not create a SpecCompiler source project.
+If the ReqIF file contains multiple `SPECIFICATION` entries, all of them are
+imported into the same database. In that case, do not pass `--spec-id`;
+`--spec-id` is only an override for single-specification imports.
+
 Export a SpecIR specification to ReqIF:
 
 ```commandline
@@ -173,8 +179,18 @@ python -m reqif.specir export \
 If the database contains exactly one specification, `--spec-id` can be omitted
 for export. Databases created by `reqif.specir import` can be exported again,
 and databases created by current SpecCompiler builds are supported directly.
+If the database contains multiple specifications, pass either `--spec-id` to
+export one specification or `--all` to export them into one ReqIF package:
 
-To convert ReqIF into an editable CommonSpec project:
+```commandline
+python -m reqif.specir export \
+  --db build/specir.db \
+  --output requirements.reqif \
+  --all
+```
+
+To convert ReqIF into an editable and buildable CommonSpec project, use
+`import-decompile`:
 
 ```commandline
 python -m reqif.specir import-decompile \
@@ -182,6 +198,22 @@ python -m reqif.specir import-decompile \
   --output-dir ./project \
   --overwrite
 ```
+
+This command imports the ReqIF into `./project/.specir.db`, generates
+`./project/project.yaml`, generates Lua model/type files under
+`./project/models/imported/types/`, and writes the CommonSpec Markdown files.
+Use this command, not plain `import`, when the result should be opened and
+built by SpecCompiler.
+
+The generated model is a normal SpecCompiler overlay model:
+
+- `models/<model-name>/model.yaml` declares required base models.
+- `models/<model-name>/types/` contains generated ReqIF object, relation, and
+  specification descriptors.
+- ReqIF object types without an explicit parent extend `SECTION`; ReqIF
+  specification types without an explicit parent extend `SPEC`.
+- ReqIF attribute names are made CommonSpec/SQL-safe in the generated Markdown
+  and Lua descriptors, for example `TC1300 String` becomes `TC1300_String`.
 
 To decompile an existing SpecIR database:
 
@@ -192,6 +224,90 @@ python -m reqif.specir decompile \
   --spec-id srs \
   --overwrite
 ```
+
+If the database contains multiple specifications, pass `--all` to decompile all
+of them into the generated project:
+
+```commandline
+python -m reqif.specir decompile \
+  --db build/specir.db \
+  --output-dir ./project \
+  --all \
+  --overwrite
+```
+
+For `import-decompile`, multi-specification ReqIF files also require `--all`:
+
+```commandline
+python -m reqif.specir import-decompile \
+  --input requirements.reqif \
+  --output-dir ./project \
+  --all \
+  --overwrite
+```
+
+The generated `project.yaml` lists every root Markdown file and uses
+`{spec_id}` placeholders in output paths, so SpecCompiler can emit one output
+file per specification, for example `docx/{spec_id}.docx`.
+
+To merge imported ReqIF types with any existing SpecCompiler model, generate an
+overlay model that requires the base model and forwards its DOCX behavior when
+present:
+
+```commandline
+python -m reqif.specir import-decompile \
+  --input requirements.reqif \
+  --output-dir ./project \
+  --model-name imported_vendor \
+  --base-model vendor \
+  --style corporate-report \
+  --overwrite
+
+speccompiler-core build ./project/project.yaml
+```
+
+`--base-model vendor` adds `vendor` to the generated `model.yaml` `requires:`
+list and creates forwarding files for the base model's DOCX filter,
+postprocessor, and the selected style preset. If the base model does not
+provide a DOCX filter or postprocessor, the generated forwarding file is a
+no-op, so the imported ReqIF types can still be loaded with the model.
+
+Model discovery is performed by SpecCompiler:
+
+- For type loading, SpecCompiler probes `SPECCOMPILER_HOME/models/<model>` first.
+- If it is not found there, it probes `./models/<model>` from the current build
+  directory. The `speccompiler-core` wrapper changes into the directory that
+  contains `project.yaml`, so this means the generated project can carry local
+  models under `./models/`.
+- The generated overlay model lives in `./project/models/<model-name>`.
+- `--base-model <base-model>` writes `requires: [<base-model>]` to the generated
+  overlay's `model.yaml`, so SpecCompiler loads the base model before the
+  generated ReqIF types.
+- DOCX style/filter resolution in current SpecCompiler is based on
+  `SPECCOMPILER_HOME/models/<template>`. If the active template is the generated
+  overlay model and you need forwarded DOCX behavior, make that overlay
+  discoverable under `SPECCOMPILER_HOME/models/<model-name>` too, or run with a
+  wrapper `SPECCOMPILER_HOME` that points at a directory containing `src`,
+  `models/default`, `models/<base-model>`, and `models/<model-name>`.
+
+Example with a project-local base model:
+
+```commandline
+mkdir -p ./project/models
+ln -s /path/to/vendor-model ./project/models/vendor
+
+python -m reqif.specir import-decompile \
+  --input requirements.reqif \
+  --output-dir ./project \
+  --model-name imported_vendor \
+  --base-model vendor \
+  --style corporate-report \
+  --overwrite
+```
+
+The test suite covers this generic overlay path using local model checkouts and
+a non-mutating wrapper `SPECCOMPILER_HOME`; the model names are not
+special-cased by `reqif.specir`.
 
 For StrictDoc interoperability, export from SpecIR to ReqIF and let StrictDoc
 decode the ReqIF:

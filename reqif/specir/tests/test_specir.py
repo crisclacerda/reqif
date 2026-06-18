@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import sqlite3
 import unittest
+from pathlib import Path
 
 from reqif.models.reqif_core_content import ReqIFCoreContent
 from reqif.models.reqif_data_type import (
@@ -28,7 +29,7 @@ from reqif.models.reqif_types import SpecObjectAttributeType
 from reqif.object_lookup import ReqIFObjectLookup
 from reqif.reqif_bundle import ReqIFBundle
 
-from reqif.specir import export_reqif, import_reqif
+from reqif.specir import export_reqif, export_reqif_multi, import_reqif
 from reqif.specir.id_map import IdMap, _stable_id
 from reqif.specir.schema import ensure_schema
 from reqif.specir.xhtml import from_reqif_xhtml, to_reqif_xhtml
@@ -45,6 +46,7 @@ def _make_sample_bundle() -> ReqIFBundle:
     dt_string = ReqIFDataTypeDefinitionString(
         identifier="DT-STRING", long_name="String", last_change="2024-01-01T00:00:00Z",
     )
+
     dt_xhtml = ReqIFDataTypeDefinitionXHTML(
         identifier="DT-XHTML", long_name="XHTML", last_change="2024-01-01T00:00:00Z",
     )
@@ -186,6 +188,74 @@ def _make_sample_bundle() -> ReqIFBundle:
         lookup=ReqIFObjectLookup.empty(),
         exceptions=[],
     )
+
+
+def _make_multi_spec_bundle() -> ReqIFBundle:
+    bundle = _make_sample_bundle()
+    content = bundle.core_content.req_if_content
+    assert content.specifications is not None
+
+    hierarchy = [
+        ReqIFSpecHierarchy(
+            identifier="H-3",
+            spec_object="SO-1",
+            level=1,
+            children=[],
+            ref_then_children_order=True,
+        ),
+        ReqIFSpecHierarchy(
+            identifier="H-4",
+            spec_object="SO-2",
+            level=1,
+            children=[],
+            ref_then_children_order=True,
+        ),
+    ]
+    content.specifications.append(
+        ReqIFSpecification(
+            identifier="SPEC-2",
+            long_name="Test SDD",
+            specification_type="ST-SPEC",
+            children=hierarchy,
+            last_change="2024-01-01T00:00:00Z",
+        )
+    )
+    return bundle
+
+
+def _make_cross_spec_bundle() -> ReqIFBundle:
+    """Two specs with DISJOINT objects and a relation that crosses them.
+
+    SPEC-1 (Test SRS) owns SO-1, SPEC-2 (Test SDD) owns SO-2, and the
+    SO-1 -> SO-2 relation therefore spans the two specifications.  Exporting
+    both must preserve that relation; resolving relations against a single
+    specification's object map silently drops it.
+    """
+    bundle = _make_sample_bundle()
+    content = bundle.core_content.req_if_content
+    assert content.specifications is not None
+
+    # SPEC-1 keeps only SO-1.
+    content.specifications[0].children = [content.specifications[0].children[0]]
+    # SPEC-2 owns only SO-2.
+    content.specifications.append(
+        ReqIFSpecification(
+            identifier="SPEC-2",
+            long_name="Test SDD",
+            specification_type="ST-SPEC",
+            children=[
+                ReqIFSpecHierarchy(
+                    identifier="H-2b",
+                    spec_object="SO-2",
+                    level=1,
+                    children=[],
+                    ref_then_children_order=True,
+                )
+            ],
+            last_change="2024-01-01T00:00:00Z",
+        )
+    )
+    return bundle
 
 
 class TestSchema(unittest.TestCase):
@@ -404,6 +474,47 @@ class TestImport(unittest.TestCase):
 
         conn.close()
 
+    def test_import_multiple_specifications(self):
+        conn = _make_in_memory_db()
+        bundle = _make_multi_spec_bundle()
+
+        first_spec_id = import_reqif(bundle, conn)
+
+        spec_ids = [
+            r[0] for r in conn.execute(
+                "SELECT identifier FROM specifications ORDER BY identifier"
+            ).fetchall()
+        ]
+        self.assertEqual(first_spec_id, "test-srs")
+        self.assertEqual(spec_ids, ["test-sdd", "test-srs"])
+
+        for spec_id in spec_ids:
+            object_count = conn.execute(
+                "SELECT COUNT(*) FROM spec_objects WHERE specification_ref = ?",
+                (spec_id,),
+            ).fetchone()[0]
+            self.assertEqual(object_count, 2)
+
+        # The shared SO-1 -> SO-2 relation is stored once, owned by the source
+        # object's specification (test-srs), not duplicated into every spec.
+        relations = conn.execute(
+            "SELECT specification_ref, target_text FROM spec_relations"
+        ).fetchall()
+        self.assertEqual(len(relations), 1)
+        self.assertEqual(relations[0][0], "test-srs")
+        self.assertEqual(relations[0][1], "HLR-002")
+
+        conn.close()
+
+    def test_import_multiple_specifications_rejects_slug_override(self):
+        conn = _make_in_memory_db()
+        bundle = _make_multi_spec_bundle()
+
+        with self.assertRaises(ValueError):
+            import_reqif(bundle, conn, spec_slug="one-id")
+
+        conn.close()
+
 
 class TestExport(unittest.TestCase):
     def _make_populated_db(self) -> sqlite3.Connection:
@@ -594,6 +705,84 @@ class TestRoundTrip(unittest.TestCase):
         self.assertEqual(len(content.specifications), 1)
 
         conn.close()
+
+    def test_import_then_export_multiple_specifications(self):
+        conn = _make_in_memory_db()
+        bundle = _make_multi_spec_bundle()
+        import_reqif(bundle, conn)
+
+        exported = export_reqif_multi(conn, ["test-sdd", "test-srs"])
+        content = exported.core_content.req_if_content
+
+        self.assertEqual(len(content.specifications), 2)
+        self.assertEqual(
+            sorted(spec.long_name for spec in content.specifications),
+            ["Test SDD", "Test SRS"],
+        )
+        self.assertEqual(len(content.spec_relations), 1)
+        hierarchy_lengths = sorted(len(spec.children) for spec in content.specifications)
+        self.assertEqual(hierarchy_lengths, [2, 2])
+
+        conn.close()
+
+    def test_export_preserves_cross_specification_relations(self):
+        conn = _make_in_memory_db()
+        bundle = _make_cross_spec_bundle()
+        import_reqif(bundle, conn)
+
+        exported = export_reqif_multi(conn, ["test-sdd", "test-srs"])
+        content = exported.core_content.req_if_content
+
+        # Objects live in different specifications, but the SO-1 -> SO-2
+        # relation must survive the multi-spec export.
+        self.assertEqual(len(content.specifications), 2)
+        self.assertEqual(len(content.spec_relations), 1)
+        relation = content.spec_relations[0]
+        object_ids = {obj.identifier for obj in content.spec_objects}
+        self.assertIn(relation.source, object_ids)
+        self.assertIn(relation.target, object_ids)
+
+        conn.close()
+
+    def test_real_world_multi_spec_reqif_round_trips(self):
+        """A real multi-specification ReqIF export survives import/export.
+
+        Uses a third-party (Eclipse RMF) ReqIF package with two specifications
+        from the integration corpus; specifications and objects must be stable
+        across import -> export_reqif_multi -> import.
+        """
+        fixture = (
+            Path(__file__).resolve().parents[3]
+            / "tests" / "integration" / "examples"
+            / "04_convert_reqif_to_json" / "sample3_eclipse_rmf.reqif"
+        )
+        if not fixture.is_file():
+            self.skipTest(f"fixture not found: {fixture}")
+
+        from reqif.parser import ReqIFParser
+
+        conn1 = _make_in_memory_db()
+        import_reqif(ReqIFParser.parse(str(fixture)), conn1)
+        spec_ids = [
+            r[0] for r in conn1.execute(
+                "SELECT identifier FROM specifications ORDER BY identifier"
+            )
+        ]
+        self.assertEqual(len(spec_ids), 2)
+
+        exported = export_reqif_multi(conn1, spec_ids)
+        conn2 = _make_in_memory_db()
+        import_reqif(exported, conn2)
+
+        def counts(conn):
+            return (
+                conn.execute("SELECT COUNT(*) FROM specifications").fetchone()[0],
+                conn.execute("SELECT COUNT(*) FROM spec_objects").fetchone()[0],
+            )
+
+        self.assertEqual(counts(conn1), counts(conn2))
+        conn1.close()
+        conn2.close()
 
 
 if __name__ == "__main__":

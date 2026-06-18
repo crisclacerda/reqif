@@ -15,6 +15,7 @@ import sys
 from typing import Any, Dict, List, Optional, Tuple
 
 from .content_converter import attr_xhtml_to_markdown, body_to_markdown
+from .names import to_commonspec_identifier
 
 
 def _slugify(text: str) -> str:
@@ -181,7 +182,7 @@ def _render_specification_header(
     for attr in spec_attrs:
         val = _format_attr_value(conn, attr)
         if val is not None:
-            lines.append(f"> {attr['name']}: {val}")
+            lines.append(f"> {to_commonspec_identifier(attr['name'])}: {val}")
             lines.append("")
 
     return "\n".join(lines)
@@ -225,7 +226,7 @@ def _render_object(
             continue
         val = _format_attr_value(conn, attr)
         if val is not None:
-            lines.append(f"> {attr['name']}: {val}")
+            lines.append(f"> {to_commonspec_identifier(attr['name'])}: {val}")
             lines.append("")
 
     # Body content: ast (Pandoc JSON) → content_xhtml (HTML) → nothing
