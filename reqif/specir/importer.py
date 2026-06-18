@@ -80,6 +80,17 @@ def _slugify(text: str) -> str:
     return s.strip("-")
 
 
+def _type_identifier(long_name: str) -> str:
+    """Uppercase, SQL-safe identifier for a generated type.
+
+    SpecCompiler uses type identifiers as SQL identifiers (for example in
+    generated data-view names), so every non-word character -- including the
+    hyphen in names like "High-Level Requirement" -- must collapse to an
+    underscore, not only spaces.
+    """
+    return re.sub(r"\W+", "_", long_name or "").strip("_").upper()
+
+
 # ── Stage 1: Bootstrap type system ───────────────────────────────────────
 
 def _import_datatypes(
@@ -150,7 +161,7 @@ def _import_spec_types(
     for st in spec_types:
         if isinstance(st, ReqIFSpecObjectType):
             long_name = st.long_name or st.identifier
-            specir_id = long_name.upper().replace(" ", "_")
+            specir_id = _type_identifier(long_name)
             obj_type_map[st.identifier] = specir_id
 
             conn.execute(
@@ -186,7 +197,7 @@ def _import_spec_types(
 
         elif isinstance(st, ReqIFSpecRelationType):
             long_name = st.long_name or st.identifier
-            specir_id = long_name.upper().replace(" ", "_")
+            specir_id = _type_identifier(long_name)
             rel_type_map[st.identifier] = specir_id
 
             conn.execute(
@@ -198,7 +209,7 @@ def _import_spec_types(
 
         elif isinstance(st, ReqIFSpecificationType):
             long_name = st.long_name or st.identifier
-            specir_id = long_name.upper().replace(" ", "_")
+            specir_id = _type_identifier(long_name)
             spec_type_map[st.identifier] = specir_id
 
             conn.execute(
